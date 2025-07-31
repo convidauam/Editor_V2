@@ -1,7 +1,7 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useRef } from 'react'; // Agregamos useRef
 import ReactFlow, {
   ReactFlowProvider,
-  Background,
+  Background as ReactFlowBackground,
   Controls,
   MiniMap,
   BackgroundVariant,
@@ -11,9 +11,10 @@ import { useDiagram } from '../../hooks/useDiagram';
 import { ContextMenu } from '../ContextMenu/ContextMenu';
 import { NodeEditModal } from '../NodeEditModal/NodeEditModal';
 import { EdgeEditModal } from '../EdgeEditModal/EdgeEditModal';
-import { CustomNode } from '../NodeTypes/CustomNode';
+import { CustomNode } from '../NodeTypes/CustomNode'; // Cambiamos la importación
 import { CustomEdgeWithLabel } from '../EdgeTypes/CustomEdgeWithLabel';
 import { useTheme } from '@mui/material/styles';
+import { Toolbar } from '../Toolbar/Toolbar';
 
 const nodeTypes = {
   custom: CustomNode,
@@ -25,6 +26,7 @@ const edgeTypes = {
 
 export const DiagramCanvas: React.FC = () => {
   const theme = useTheme();
+  const diagramRef = useRef<HTMLDivElement>(null); // Definimos diagramRef
   const {
     nodes,
     edges,
@@ -37,6 +39,7 @@ export const DiagramCanvas: React.FC = () => {
     onNodeContextMenu,
     onEdgeContextMenu,
     setReactFlowInstance,
+    reactFlowInstance, // Para arreglar que no se ve el toolbar 
     contextMenu,
     closeContextMenu,
     createNodeFromContextMenu,
@@ -58,8 +61,14 @@ export const DiagramCanvas: React.FC = () => {
     closeContextMenu();
   }, [closeContextMenu]);
 
+  //Cambio 2
   return (
-    <div style={{ width: '100%', height: '100vh' }}>
+    //<div style={{ width: '100%', height: '100vh' }}>
+    <div ref={diagramRef} style={{ width: '100%', height: '100vh', position: 'relative' }}>
+    <Toolbar
+      reactFlowInstance={reactFlowInstance}
+      diagramRef={diagramRef}
+    /> 
       <ReactFlowProvider>
         <ReactFlow
           nodes={nodes}
@@ -81,7 +90,7 @@ export const DiagramCanvas: React.FC = () => {
             backgroundColor: theme.palette.background.default,
           }}
         >
-          <Background
+          <ReactFlowBackground
             variant={BackgroundVariant.Dots}
             gap={20}
             size={1}
