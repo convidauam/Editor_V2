@@ -133,6 +133,25 @@ export const useDiagram = () => {
     closeContextMenu();
   }, [selectedEdgeForDelete, setEdges, closeContextMenu]);
 
+  const toggleEdgeDirection = useCallback(() => {
+    if (!selectedEdgeForDelete) return;
+
+    setEdges((eds) =>
+      eds.map((edge) =>
+        edge.id === selectedEdgeForDelete
+          ? {
+              ...edge,
+              data: {
+                ...edge.data,
+                isReversed: !edge.data?.isReversed, // Cambiamos la orientación
+              },
+            }
+          : edge
+      )
+    );
+    closeContextMenu();
+  }, [selectedEdgeForDelete, setEdges, closeContextMenu]);
+
   const addNode = useCallback((type: string = 'custom', position = { x: 100, y: 100 }) => {
     const newNode: Node = {
       id: generateNodeId(),
@@ -218,6 +237,7 @@ export const useDiagram = () => {
     createNodeFromContextMenu,
     deleteNodeFromContextMenu,
     deleteEdgeFromContextMenu,
+    toggleEdgeDirection,
     selectedNodeForDelete,
     selectedEdgeForDelete,
     addNode,

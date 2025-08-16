@@ -5,6 +5,7 @@ import ReactFlow, {
   Controls,
   MiniMap,
   BackgroundVariant,
+  Connection,
 } from 'reactflow';
 import 'reactflow/dist/style.css';
 import { useDiagram } from '../../hooks/useDiagram';
@@ -22,6 +23,11 @@ const nodeTypes = {
 
 const edgeTypes = {
   'custom-label': CustomEdgeWithLabel,
+};
+
+const isValidConnection = (connection: Connection) => {
+  // Permitir conexiones entre cualquier source y cualquier target
+  return true;
 };
 
 export const DiagramCanvas: React.FC = () => {
@@ -56,6 +62,7 @@ export const DiagramCanvas: React.FC = () => {
     closeEditModal,
     closeEdgeEditModal,
     importFromJson,
+    toggleEdgeDirection,
   } = useDiagram();
 
   const onPaneClick = useCallback(() => {
@@ -86,6 +93,7 @@ export const DiagramCanvas: React.FC = () => {
           nodeTypes={nodeTypes}
           edgeTypes={edgeTypes}
           fitView
+          isValidConnection={isValidConnection} // Agregamos la validación personalizada
           style={{
             backgroundColor: theme.palette.background.default,
           }}
@@ -111,6 +119,7 @@ export const DiagramCanvas: React.FC = () => {
         onCreateNode={createNodeFromContextMenu}
         onDeleteNode={deleteNodeFromContextMenu}
         onDeleteEdge={deleteEdgeFromContextMenu}
+        onToggleEdgeDirection={toggleEdgeDirection} // Pasamos la nueva función
         selectedNodeForDelete={selectedNodeForDelete}
         selectedEdgeForDelete={selectedEdgeForDelete}
       />
