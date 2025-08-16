@@ -179,6 +179,25 @@ export const useDiagram = () => {
     setSelectedEdgeForEdit(null);
   }, []);
 
+  const importFromJson = (file: File) => {
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      try {
+        const json = JSON.parse(event.target?.result as string);
+        if (json.nodes && json.edges) {
+          setNodes(json.nodes as Node[]);
+          setEdges(json.edges as Edge[]);
+        } else {
+          alert('El archivo no contiene un formato válido de nodos y edges.');
+        }
+      } catch (error) {
+        console.error('Error al importar el archivo JSON:', error);
+        alert('Error al leer el archivo JSON.');
+      }
+    };
+    reader.readAsText(file);
+  };
+
   return {
     nodes,
     edges,
@@ -212,5 +231,6 @@ export const useDiagram = () => {
     isEdgeEditModalOpen,
     closeEditModal,
     closeEdgeEditModal,
+    importFromJson,
   };
-}; 
+};

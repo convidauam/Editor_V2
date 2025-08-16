@@ -1,4 +1,4 @@
-import React, { useCallback, useRef } from 'react'; // Agregamos useRef
+import React, { useCallback, useRef } from 'react';
 import ReactFlow, {
   ReactFlowProvider,
   Background as ReactFlowBackground,
@@ -11,7 +11,7 @@ import { useDiagram } from '../../hooks/useDiagram';
 import { ContextMenu } from '../ContextMenu/ContextMenu';
 import { NodeEditModal } from '../NodeEditModal/NodeEditModal';
 import { EdgeEditModal } from '../EdgeEditModal/EdgeEditModal';
-import { CustomNode } from '../NodeTypes/CustomNode'; // Cambiamos la importación
+import { CustomNode } from '../NodeTypes/CustomNode';
 import { CustomEdgeWithLabel } from '../EdgeTypes/CustomEdgeWithLabel';
 import { useTheme } from '@mui/material/styles';
 import { Toolbar } from '../Toolbar/Toolbar';
@@ -26,7 +26,7 @@ const edgeTypes = {
 
 export const DiagramCanvas: React.FC = () => {
   const theme = useTheme();
-  const diagramRef = useRef<HTMLDivElement>(null); // Definimos diagramRef
+  const diagramRef = useRef<HTMLDivElement>(null);
   const {
     nodes,
     edges,
@@ -39,7 +39,7 @@ export const DiagramCanvas: React.FC = () => {
     onNodeContextMenu,
     onEdgeContextMenu,
     setReactFlowInstance,
-    reactFlowInstance, // Para arreglar que no se ve el toolbar 
+    reactFlowInstance,
     contextMenu,
     closeContextMenu,
     createNodeFromContextMenu,
@@ -55,20 +55,20 @@ export const DiagramCanvas: React.FC = () => {
     isEdgeEditModalOpen,
     closeEditModal,
     closeEdgeEditModal,
+    importFromJson,
   } = useDiagram();
 
   const onPaneClick = useCallback(() => {
     closeContextMenu();
   }, [closeContextMenu]);
 
-  //Cambio 2
   return (
-    //<div style={{ width: '100%', height: '100vh' }}>
     <div ref={diagramRef} style={{ width: '100%', height: '100vh', position: 'relative' }}>
-    <Toolbar
-      reactFlowInstance={reactFlowInstance}
-      diagramRef={diagramRef}
-    /> 
+      <Toolbar
+        reactFlowInstance={reactFlowInstance}
+        diagramRef={diagramRef}
+        onImportJson={importFromJson}
+      />
       <ReactFlowProvider>
         <ReactFlow
           nodes={nodes}
@@ -97,7 +97,7 @@ export const DiagramCanvas: React.FC = () => {
             color={theme.palette.divider}
           />
           <Controls />
-          <MiniMap 
+          <MiniMap
             style={{
               backgroundColor: theme.palette.background.paper,
             }}
@@ -131,4 +131,4 @@ export const DiagramCanvas: React.FC = () => {
       />
     </div>
   );
-}; 
+};

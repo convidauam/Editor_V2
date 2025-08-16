@@ -1,15 +1,16 @@
 import React from 'react';
 import { Stack, Button } from '@mui/material';
-import { Download, Image, Code } from '@mui/icons-material';
+import { Download, Image, Code, UploadFile } from '@mui/icons-material';
 import { ReactFlowInstance } from 'reactflow';
 import { exportToJson, exportToPng, exportToSvg } from '../../utils/export';
 
 interface ToolbarProps {
   reactFlowInstance: ReactFlowInstance | null;
   diagramRef: React.RefObject<HTMLDivElement>;
+  onImportJson: (file: File) => void; // Nueva prop para importar JSON
 }
 
-export const Toolbar: React.FC<ToolbarProps> = ({ reactFlowInstance, diagramRef }) => {
+export const Toolbar: React.FC<ToolbarProps> = ({ reactFlowInstance, diagramRef, onImportJson }) => {
   const handleExportJson = () => {
     exportToJson(reactFlowInstance);
   };
@@ -20,6 +21,13 @@ export const Toolbar: React.FC<ToolbarProps> = ({ reactFlowInstance, diagramRef 
 
   const handleExportSvg = () => {
     exportToSvg(diagramRef.current);
+  };
+
+  const handleImportJson = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      onImportJson(file);
+    }
   };
 
   return (
@@ -64,6 +72,21 @@ export const Toolbar: React.FC<ToolbarProps> = ({ reactFlowInstance, diagramRef 
       >
         Exportar SVG
       </Button>
+      <Button
+        variant="outlined"
+        color="secondary"
+        startIcon={<UploadFile />}
+        component="label"
+        size="small"
+      >
+        Importar JSON
+        <input
+          type="file"
+          accept=".json"
+          hidden
+          onChange={handleImportJson}
+        />
+      </Button>
     </Stack>
   );
-}; 
+};
