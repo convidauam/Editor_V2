@@ -1,3 +1,6 @@
+Wiki ---> https://wikiabeja.apuntia.com/es/componentes/editor
+
+
 ## Funcionalidades
 Las funcionalidades actuales del editor gráfico son:
 
