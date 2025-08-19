@@ -148,6 +148,103 @@ Cuando el usuario hace clic en ese botón, se llama a un handler como `handleExp
 
 ---
 
+### **Mostrar Iconos en los Nodos**
+
+Se implementó la funcionalidad para que los nodos puedan mostrar un icono junto con el texto. Los iconos se especifican en el archivo JSON de entrada mediante la propiedad `iconUrl`.
+
+#### **Cambios Realizados**
+- **Archivo Modificado**: CustomNode.tsx
+- **Detalles**:
+  - Se agregó un contenedor `<Box>` para renderizar el icono dentro del nodo.
+  - El tamaño del icono se configuró  100 x 100
+  - El icono se renderiza solo si la propiedad `iconUrl` está presente en los datos del nodo.
+
+#### **Código Relevante**
+```tsx
+{data.iconUrl && (
+  <Box
+    component="img"
+    src={data.iconUrl}
+    alt={data.label}
+    sx={{
+      width: 80, // Tamaño del icono
+      height: 80,
+      objectFit: 'contain',
+      borderRadius: '50%',
+      border: '1px solid #ccc',
+    }}
+  />
+)}
+```
+
+---
+
+### ** Importación de Diagramas JSON con Iconos**
+
+Se actualizó la función de importación para que los nodos puedan incluir la propiedad `iconUrl` y renderizar los iconos especificados en el archivo JSON.
+
+#### **Cambios Realizados**
+- **Archivo Modificado**: `useDiagram.ts`
+- **Detalles**:
+  - La función `importFromJson` fue revisada para asegurarse de que los nodos con la propiedad `iconUrl` se carguen correctamente.
+
+#### **Código Relevante**
+```tsx
+const importFromJson = (file: File) => {
+  const reader = new FileReader();
+  reader.onload = (event) => {
+    try {
+      const json = JSON.parse(event.target?.result as string);
+      if (json.nodes && json.edges) {
+        setNodes(json.nodes as Node[]);
+        setEdges(json.edges as Edge[]);
+      } else {
+        alert('El archivo no contiene un formato válido de nodos y edges.');
+      }
+    } catch (error) {
+      console.error('Error al importar el archivo JSON:', error);
+      alert('Error al leer el archivo JSON.');
+    }
+  };
+  reader.readAsText(file);
+};
+```
+
+
+
+### ** Estructura del Archivo JSON**
+
+El archivo JSON de entrada debe incluir la propiedad `iconUrl` en los nodos para que se rendericen los iconos. Un ejemplo de estructura válida:
+
+```json
+{
+  "nodes": [
+    {
+      "id": "node-1",
+      "data": {
+        "label": "Nodo 1",
+        "themeColor": "blue",
+        "iconUrl": "/icons/icon1.png"
+      },
+      "position": {
+        "x": 100,
+        "y": 200
+      },
+      "type": "custom"
+    }
+  ],
+  "edges": [
+    {
+      "id": "edge-1",
+      "source": "node-1",
+      "target": "node-2",
+      "type": "custom-label"
+    }
+  ]
+}
+```
+
+---
 
 
 Dejo aqui el readme default por si les sirve:
