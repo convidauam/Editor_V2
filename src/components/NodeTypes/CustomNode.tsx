@@ -13,9 +13,14 @@ export const CustomNode: React.FC<NodeProps> = ({ data, selected }) => {
         border: selected ? '2px solid #1976d2' : '1px solid #555',
         borderRadius: 1,
         minWidth: 150,
-        minHeight: 40,
+        minHeight: 60,
         position: 'relative',
         boxShadow: selected ? 2 : 1,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        padding: '8px',
+        gap: '8px',
       }}
     >
       {/* Línea de tema en la parte superior */}
@@ -31,23 +36,37 @@ export const CustomNode: React.FC<NodeProps> = ({ data, selected }) => {
         }}
       />
 
-      {/* Contenido del nodo */}
-      <Box sx={{ padding: 2, paddingTop: 2.5 }}>
-        <Typography
-          variant="body2"
+      {/* Icono del nodo */}
+      {data.iconUrl && (
+        <Box
+          component="img"
+          src={data.iconUrl}
+          alt={data.label}
           sx={{
-            color: 'text.primary',
-            textAlign: 'center',
-            fontWeight: 500,
-            wordBreak: 'break-word',
+            width: 100, // Duplicamos el tamaño del ancho
+            height: 100, // Duplicamos el tamaño del alto
+            objectFit: 'contain',
+            borderRadius: '50%',
+            border: '1px solid #ccc',
           }}
-        >
-          {data.label}
-        </Typography>
-      </Box>
+        />
+      )}
+
+      {/* Contenido del nodo */}
+      <Typography
+        variant="body2"
+        sx={{
+          color: 'text.primary',
+          textAlign: 'center',
+          fontWeight: 500,
+          wordBreak: 'break-word',
+          flex: 1,
+        }}
+      >
+        {data.label}
+      </Typography>
 
       {/* Handles para conexiones */}
-      {/* Top */}
       <Handle
         type="target"
         position={Position.Top}
@@ -62,8 +81,6 @@ export const CustomNode: React.FC<NodeProps> = ({ data, selected }) => {
         style={{ background: '#555' }}
         isConnectable={true}
       />
-
-      {/* Bottom */}
       <Handle
         type="target"
         position={Position.Bottom}
@@ -78,8 +95,6 @@ export const CustomNode: React.FC<NodeProps> = ({ data, selected }) => {
         style={{ background: '#555' }}
         isConnectable={true}
       />
-
-      {/* Left */}
       <Handle
         type="target"
         position={Position.Left}
@@ -94,8 +109,6 @@ export const CustomNode: React.FC<NodeProps> = ({ data, selected }) => {
         style={{ background: '#555' }}
         isConnectable={true}
       />
-
-      {/* Right */}
       <Handle
         type="target"
         position={Position.Right}

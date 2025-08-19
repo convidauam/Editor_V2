@@ -1,0 +1,314 @@
+{
+  "nodes": [
+    {
+      "id": "node-4d550c14-aa4f-47f2-af71-5b850f76f48d",
+        "data": {
+            "label": "Huevo (2n) fecundado",
+            "themeColor": "amber",
+            "iconUrl": "/icons/huevo.png"
+        },
+      "position": {
+        "x": 32.51074546134117,
+        "y": 322.13017301403823
+      },
+      "type": "custom",
+      "width": 176,
+      "height": 58,
+      "selected": false,
+      "dragging": false,
+      "positionAbsolute": {
+        "x": 32.51074546134117,
+        "y": 322.13017301403823
+      }
+    },
+    {
+      "id": "node-dd5892f6-fee6-4ee2-a835-6e63c79dd16c",
+        "data": {
+            "label": "Reina inseminada y con óvulos",
+            "themeColor": "amber",
+            "iconUrl": "/icons/reina_i.png"
+        },
+      "position": {
+        "x": 277.91866747528616,
+        "y": 50.51743823373472
+      },
+      "type": "custom",
+      "width": 232,
+      "height": 58,
+      "selected": false,
+      "dragging": false,
+      "positionAbsolute": {
+        "x": 277.91866747528616,
+        "y": 50.51743823373472
+      }
+    },
+    {
+      "id": "node-f38869ef-a442-472e-b012-4a47f6dc9412",
+        "data": {
+            "label": "Huevo (n) no fecundado",
+            "themeColor": "amber",
+            "iconUrl": "/icons/huevo.png"
+        },
+      "position": {
+        "x": 660.6928337433189,
+        "y": 302.1301730140383
+      },
+      "type": "custom",
+      "width": 187,
+      "height": 58,
+      "selected": false,
+      "dragging": false,
+      "positionAbsolute": {
+        "x": 660.6928337433189,
+        "y": 302.1301730140383
+      }
+    },
+    {
+      "id": "node-90aeec3c-a481-4f5b-95ec-22436264629d",
+        "data": {
+            "label": "Zángano (n) haploide",
+            "themeColor": "amber",
+            "iconUrl": "/icons/zangano.png"
+        },
+      "position": {
+        "x": 664.6636368760062,
+        "y": -92.60625631361742
+      },
+      "type": "custom",
+      "width": 170,
+      "height": 58,
+      "selected": false,
+      "dragging": false,
+      "positionAbsolute": {
+        "x": 664.6636368760062,
+        "y": -92.60625631361742
+      }
+    },
+    {
+      "id": "node-395a0990-408a-4459-a8e2-b74100a3f295",
+      "data": {
+        "label": "Espermatozoides",
+        "themeColor": "default"
+      },
+      "position": {
+        "x": 430.0026400834459,
+        "y": -174.23845567212945
+      },
+      "type": "custom",
+      "width": 152,
+      "height": 58,
+      "selected": false,
+      "dragging": false,
+      "positionAbsolute": {
+        "x": 430.0026400834459,
+        "y": -174.23845567212945
+      }
+    },
+    {
+      "id": "node-9cb93970-e971-4530-949e-b3d94802f1b5",
+        "data": {
+            "label": "reina (2n) diploide",
+            "themeColor": "amber",
+            "iconUrl": "/icons/reina.png"
+        },
+      "position": {
+        "x": 41.05973005239025,
+        "y": -60.99963582863957
+      },
+      "type": "custom",
+      "width": 152,
+      "height": 58,
+      "selected": false,
+      "positionAbsolute": {
+        "x": 41.05973005239025,
+        "y": -60.99963582863957
+      },
+      "dragging": false
+    },
+    {
+      "id": "node-ac79e039-af75-42c8-8c26-ada689894dfc",
+      "data": {
+        "label": "Obrera (2n) diploide",
+        "themeColor": "amber",
+        "iconUrl": "/icons/obrera.png"
+      },
+      "position": {
+        "x": -228.49695409631192,
+        "y": 6.688160131459547
+      },
+      "type": "custom",
+      "width": 162,
+      "height": 58,
+      "selected": false,
+      "dragging": false,
+      "positionAbsolute": {
+        "x": -228.49695409631192,
+        "y": 6.688160131459547
+      }
+    },
+    {
+      "id": "node-142e860a-4c6d-4d41-a2d6-422f2e384fa3",
+      "data": {
+        "label": "Óvulos",
+        "themeColor": "default"
+      },
+      "position": {
+        "x": 211.17625180649404,
+        "y": -178.53497670270008
+      },
+      "type": "custom",
+      "width": 152,
+      "height": 58,
+      "selected": false,
+      "dragging": false,
+      "positionAbsolute": {
+        "x": 211.17625180649404,
+        "y": -178.53497670270008
+      }
+    },
+    {
+      "id": "node-4c9a3ad4-c66b-44ac-a141-04ad6ee2d8ff",
+      "data": {
+        "label": "Acoplamiento",
+        "themeColor": "default"
+      },
+      "position": {
+        "x": 318.94240364774004,
+        "y": -51.53414228744782
+      },
+      "type": "custom",
+      "width": 152,
+      "height": 58,
+      "selected": false,
+      "dragging": false,
+      "positionAbsolute": {
+        "x": 318.94240364774004,
+        "y": -51.53414228744782
+      }
+    }
+  ],
+  "edges": [
+    {
+      "source": "node-f38869ef-a442-472e-b012-4a47f6dc9412",
+      "sourceHandle": "top-source",
+      "target": "node-90aeec3c-a481-4f5b-95ec-22436264629d",
+      "targetHandle": "bottom-target",
+      "id": "edge-5abc2c91-527c-47a2-94ca-82cd797f1443",
+      "type": "custom-label",
+      "selected": false,
+      "label": "desarrollo por partenogénesis arrenotóquica / alimentación: para zángano",
+      "style": {}
+    },
+    {
+      "source": "node-90aeec3c-a481-4f5b-95ec-22436264629d",
+      "sourceHandle": "top-source",
+      "target": "node-395a0990-408a-4459-a8e2-b74100a3f295",
+      "targetHandle": "top-target",
+      "id": "edge-9d580356-688c-4f4d-8d17-68a7185c20ee",
+      "type": "custom-label",
+      "selected": false,
+      "label": "gametogénesis",
+      "style": {}
+    },
+    {
+      "source": "node-4d550c14-aa4f-47f2-af71-5b850f76f48d",
+      "sourceHandle": "top-source",
+      "target": "node-9cb93970-e971-4530-949e-b3d94802f1b5",
+      "targetHandle": "bottom-target",
+      "id": "edge-93d508a3-5125-423a-9772-2546eaf61ef6",
+      "type": "custom-label",
+      "selected": false,
+      "label": "desarrollo/alimentación: jalea real",
+      "style": {}
+    },
+    {
+      "source": "node-4d550c14-aa4f-47f2-af71-5b850f76f48d",
+      "sourceHandle": "top-source",
+      "target": "node-ac79e039-af75-42c8-8c26-ada689894dfc",
+      "targetHandle": "bottom-target",
+      "id": "edge-5ad3ddcb-9576-4323-9e5d-cf2bf1a37798",
+      "type": "custom-label",
+      "selected": false,
+      "label": "desarrollo/ alimentación: pan de abeja",
+      "style": {}
+    },
+    {
+      "source": "node-9cb93970-e971-4530-949e-b3d94802f1b5",
+      "sourceHandle": "top-source",
+      "target": "node-142e860a-4c6d-4d41-a2d6-422f2e384fa3",
+      "targetHandle": "top-target",
+      "id": "edge-791b39aa-6e0d-40fc-a84b-8ec5c99aa47a",
+      "type": "custom-label",
+      "selected": false,
+      "label": "gametogénesis",
+      "style": {}
+    },
+    {
+      "source": "node-142e860a-4c6d-4d41-a2d6-422f2e384fa3",
+      "sourceHandle": "bottom-source",
+      "target": "node-4c9a3ad4-c66b-44ac-a141-04ad6ee2d8ff",
+      "targetHandle": "top-target",
+      "id": "edge-69d13da7-5256-46c6-a3e1-3cf7e64ab40f",
+      "type": "custom-label"
+    },
+    {
+      "source": "node-395a0990-408a-4459-a8e2-b74100a3f295",
+      "sourceHandle": "bottom-source",
+      "target": "node-4c9a3ad4-c66b-44ac-a141-04ad6ee2d8ff",
+      "targetHandle": "top-target",
+      "id": "edge-432b5500-5dbd-445a-86c6-64d2b900e7e7",
+      "type": "custom-label"
+    },
+    {
+      "source": "node-9cb93970-e971-4530-949e-b3d94802f1b5",
+      "sourceHandle": "right-source",
+      "target": "node-4c9a3ad4-c66b-44ac-a141-04ad6ee2d8ff",
+      "targetHandle": "left-target",
+      "id": "edge-c44cf61e-7dd3-413e-8a5e-dc2dd30a2a81",
+      "type": "custom-label"
+    },
+    {
+      "source": "node-90aeec3c-a481-4f5b-95ec-22436264629d",
+      "sourceHandle": "left-source",
+      "target": "node-4c9a3ad4-c66b-44ac-a141-04ad6ee2d8ff",
+      "targetHandle": "right-target",
+      "id": "edge-1031cd54-4fa6-4512-9377-04b465a02ee6",
+      "type": "custom-label"
+    },
+    {
+      "source": "node-4c9a3ad4-c66b-44ac-a141-04ad6ee2d8ff",
+      "sourceHandle": "bottom-source",
+      "target": "node-dd5892f6-fee6-4ee2-a835-6e63c79dd16c",
+      "targetHandle": "top-target",
+      "id": "edge-ba006985-4ef1-4026-8f41-8d53ac433908",
+      "type": "custom-label"
+    },
+    {
+      "source": "node-dd5892f6-fee6-4ee2-a835-6e63c79dd16c",
+      "sourceHandle": "bottom-source",
+      "target": "node-4d550c14-aa4f-47f2-af71-5b850f76f48d",
+      "targetHandle": "top-target",
+      "id": "edge-2a0ded62-c9b8-4376-8e9e-ab265e38995c",
+      "type": "custom-label",
+      "selected": false,
+      "label": "postura con fecundación",
+      "style": {}
+    },
+    {
+      "source": "node-dd5892f6-fee6-4ee2-a835-6e63c79dd16c",
+      "sourceHandle": "bottom-source",
+      "target": "node-f38869ef-a442-472e-b012-4a47f6dc9412",
+      "targetHandle": "top-target",
+      "id": "edge-c672df92-4cf1-43cf-b9c5-8a9eda761246",
+      "type": "custom-label",
+      "selected": false,
+      "label": "postura sin fecundación",
+      "style": {}
+    }
+  ],
+  "viewport": {
+    "x": 306.145267411684,
+    "y": 413.4296238132707,
+    "zoom": 0.9862327044933586
+  }
+}

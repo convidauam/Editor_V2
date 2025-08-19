@@ -93,9 +93,9 @@ export const DiagramCanvas: React.FC = () => {
           nodeTypes={nodeTypes}
           edgeTypes={edgeTypes}
           fitView
-          isValidConnection={isValidConnection} // Agregamos la validación personalizada
+          isValidConnection={isValidConnection}
           style={{
-            backgroundColor: theme.palette.background.default,
+            backgroundColor: '#6b6454', // Color gris neutro
           }}
         >
           <ReactFlowBackground
