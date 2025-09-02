@@ -63,6 +63,8 @@ export const DiagramCanvas: React.FC = () => {
     closeEdgeEditModal,
     importFromJson,
     toggleEdgeDirection,
+    toggleArrowOnEdge,
+    setEdges,
   } = useDiagram();
 
   const onPaneClick = useCallback(() => {
@@ -95,7 +97,7 @@ export const DiagramCanvas: React.FC = () => {
           fitView
           isValidConnection={isValidConnection}
           style={{
-            backgroundColor: '#6b6454', // Color gris neutro
+            backgroundColor: '#4f4f4e', // Color gris neutro
           }}
         >
           <ReactFlowBackground
@@ -119,7 +121,9 @@ export const DiagramCanvas: React.FC = () => {
         onCreateNode={createNodeFromContextMenu}
         onDeleteNode={deleteNodeFromContextMenu}
         onDeleteEdge={deleteEdgeFromContextMenu}
-        onToggleEdgeDirection={toggleEdgeDirection} // Pasamos la nueva función
+        onToggleEdgeDirection={toggleEdgeDirection}
+        onToggleArrow={toggleArrowOnEdge} // Pasamos la función para alternar flechas
+        setEdges={setEdges} // Pasamos setEdges como prop
         selectedNodeForDelete={selectedNodeForDelete}
         selectedEdgeForDelete={selectedEdgeForDelete}
       />

@@ -1,6 +1,8 @@
 import React from 'react';
 import { Menu, MenuItem, ListItemIcon, ListItemText } from '@mui/material';
-import { Add, Delete, SwapHoriz } from '@mui/icons-material'; // Importamos SwapHoriz para el ícono
+import { Add, Delete, SwapHoriz, ArrowForward } from '@mui/icons-material';
+import { Edge } from 'reactflow';
+import { THEME_COLORS, getThemeColor } from '../../utils/themeColors';
 
 interface ContextMenuProps {
   anchorPosition: { x: number; y: number } | null;
@@ -8,7 +10,9 @@ interface ContextMenuProps {
   onCreateNode: () => void;
   onDeleteNode: () => void;
   onDeleteEdge: () => void;
-  onToggleEdgeDirection: () => void; // Nueva función para cambiar la orientación
+  onToggleEdgeDirection: () => void;
+  onToggleArrow: () => void;
+  setEdges: (updater: (edges: Edge[]) => Edge[]) => void; // Tipo corregido
   selectedNodeForDelete: string | null;
   selectedEdgeForDelete: string | null;
 }
@@ -19,7 +23,9 @@ export const ContextMenu: React.FC<ContextMenuProps> = ({
   onCreateNode,
   onDeleteNode,
   onDeleteEdge,
-  onToggleEdgeDirection, // Nueva prop
+  onToggleEdgeDirection,
+  onToggleArrow,
+  setEdges,
   selectedNodeForDelete,
   selectedEdgeForDelete,
 }) => {
@@ -43,6 +49,19 @@ export const ContextMenu: React.FC<ContextMenuProps> = ({
     onClose();
   };
 
+  const handleToggleArrow = () => {
+    if (!selectedEdgeForDelete) return;
+
+    setEdges((edges) =>
+      edges.map((edge) =>
+        edge.id === selectedEdgeForDelete
+          ? { ...edge, data: { ...edge.data, hasArrow: !edge.data?.hasArrow } }
+          : edge
+      )
+    );
+    onClose();
+  };
+
   return (
     <Menu
       open={!!anchorPosition}
@@ -62,7 +81,7 @@ export const ContextMenu: React.FC<ContextMenuProps> = ({
           <ListItemText primary="Crear Nuevo Nodo" />
         </MenuItem>
       )}
-      
+
       {selectedNodeForDelete && (
         <MenuItem onClick={handleDeleteNode}>
           <ListItemIcon>
@@ -86,8 +105,24 @@ export const ContextMenu: React.FC<ContextMenuProps> = ({
             </ListItemIcon>
             <ListItemText primary="Cambiar Orientación" />
           </MenuItem>
+          <MenuItem onClick={handleToggleArrow}>
+            <ListItemIcon>
+              <ArrowForward />
+            </ListItemIcon>
+            <ListItemText primary="Alternar Flecha" />
+          </MenuItem>
         </>
       )}
     </Menu>
   );
+};
+
+export const getNodeThemeColor = (nodeId: string, nodes: any[] | undefined): string => {
+  if (!nodes || !Array.isArray(nodes)) {
+    console.error('Error: nodes is undefined or not an array');
+    return THEME_COLORS.default;
+  }
+
+  const node = nodes.find((n) => n.id === nodeId);
+  return node?.data?.themeColor ? getThemeColor(node.data.themeColor) : THEME_COLORS.default;
 };

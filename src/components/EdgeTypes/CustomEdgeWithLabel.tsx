@@ -25,10 +25,10 @@ export const CustomEdgeWithLabel: React.FC<EdgeProps> = ({
 
   const markerId = `arrowhead-${id}`;
   const isReversed = data?.isReversed; // Determina si la flecha está invertida
+  const hasArrow = data?.hasArrow ?? true; // Por defecto, las conexiones tienen flecha
 
-  // Calcular la posición del marcador para apuntar al centro del nodo objetivo
-  const refX = isReversed ? 0 : 10; // Ajustar la posición horizontal del marcador
-  const refY = 3.5; // Centrar verticalmente el marcador
+  // Calcular el degradado para la caja del texto
+  const backgroundGradient = getEdgeLabelBackgroundColor(data?.source, data?.target, data?.nodes);
 
   return (
     <>
@@ -39,7 +39,7 @@ export const CustomEdgeWithLabel: React.FC<EdgeProps> = ({
         stroke="black"
         strokeWidth={2}
         style={style}
-        markerEnd={isReversed ? undefined : `url(#${markerId})`} // Flecha en el target
+        markerEnd={hasArrow ? `url(#${markerId})` : undefined} // Renderizamos la flecha solo si `hasArrow` es true
         markerStart={isReversed ? `url(#${markerId})` : undefined} // Flecha en el source si está invertida
       />
       <svg>
@@ -48,8 +48,8 @@ export const CustomEdgeWithLabel: React.FC<EdgeProps> = ({
             id={markerId}
             markerWidth="10"
             markerHeight="7"
-            refX={refX} // Ajustamos la posición horizontal
-            refY={refY} // Ajustamos la posición vertical
+            refX={isReversed ? 0 : 10} // Ajustar la posición horizontal del marcador
+            refY={3.5} // Centrar verticalmente el marcador
             orient="auto"
           >
             <polygon points="0 0, 10 3.5, 0 7" fill="black" />
@@ -68,7 +68,7 @@ export const CustomEdgeWithLabel: React.FC<EdgeProps> = ({
               fontWeight: 700,
               fontFamily: 'system-ui, -apple-system, sans-serif',
               color: '#fff',
-              background: getEdgeLabelBackgroundColor(data?.source, data?.target, []),
+              background: backgroundGradient, // Aplicar el degradado
               padding: '4px 12px',
               borderRadius: '6px',
               border: '1px solid rgba(255,255,255,0.2)',
