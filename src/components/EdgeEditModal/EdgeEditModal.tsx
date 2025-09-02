@@ -47,7 +47,7 @@ export const EdgeEditModal: React.FC<EdgeEditModalProps> = ({
       ...edge,
       label,
       type: 'custom-label',
-      style: style === 'dashed' ? { strokeDasharray: '5,5' } : {}, // Aplicamos el estilo punteado
+      style: style === 'dashed' ? { strokeDasharray: '5,5' } : undefined,
     };
 
     onSave(edge.id, updatedEdge);
@@ -88,4 +88,4 @@ export const EdgeEditModal: React.FC<EdgeEditModalProps> = ({
       </DialogActions>
     </Dialog>
   );
-};
+}; 

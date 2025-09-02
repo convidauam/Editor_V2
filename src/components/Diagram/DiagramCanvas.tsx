@@ -1,11 +1,10 @@
-import React, { useCallback, useRef } from 'react';
+import React, { useCallback, useEffect, useRef } from 'react';
 import ReactFlow, {
   ReactFlowProvider,
   Background as ReactFlowBackground,
   Controls,
   MiniMap,
   BackgroundVariant,
-  Connection,
 } from 'reactflow';
 import 'reactflow/dist/style.css';
 import { useDiagram } from '../../hooks/useDiagram';
@@ -16,6 +15,7 @@ import { CustomNode } from '../NodeTypes/CustomNode';
 import { CustomEdgeWithLabel } from '../EdgeTypes/CustomEdgeWithLabel';
 import { useTheme } from '@mui/material/styles';
 import { Toolbar } from '../Toolbar/Toolbar';
+import { json } from 'stream/consumers';
 
 const nodeTypes = {
   custom: CustomNode,
@@ -23,11 +23,6 @@ const nodeTypes = {
 
 const edgeTypes = {
   'custom-label': CustomEdgeWithLabel,
-};
-
-const isValidConnection = (connection: Connection) => {
-  // Permitir conexiones entre cualquier source y cualquier target
-  return true;
 };
 
 export const DiagramCanvas: React.FC = () => {
@@ -62,8 +57,15 @@ export const DiagramCanvas: React.FC = () => {
     closeEditModal,
     closeEdgeEditModal,
     importFromJson,
-    toggleEdgeDirection,
   } = useDiagram();
+
+  // Conexión entre api.py e importación automática de JSON
+  useEffect(() => {
+    fetch("http://localhost:6543/api/v1/honeycombs/default")
+      .then((res) => res.json())
+      .then((json) => importFromJson(json))
+      .catch((err) => console.error("Error al cargar honeycomb:", err));
+  }, [importFromJson]);
 
   const onPaneClick = useCallback(() => {
     closeContextMenu();
@@ -93,9 +95,8 @@ export const DiagramCanvas: React.FC = () => {
           nodeTypes={nodeTypes}
           edgeTypes={edgeTypes}
           fitView
-          isValidConnection={isValidConnection}
           style={{
-            backgroundColor: '#6b6454', // Color gris neutro
+            backgroundColor: theme.palette.background.default,
           }}
         >
           <ReactFlowBackground
@@ -119,7 +120,6 @@ export const DiagramCanvas: React.FC = () => {
         onCreateNode={createNodeFromContextMenu}
         onDeleteNode={deleteNodeFromContextMenu}
         onDeleteEdge={deleteEdgeFromContextMenu}
-        onToggleEdgeDirection={toggleEdgeDirection} // Pasamos la nueva función
         selectedNodeForDelete={selectedNodeForDelete}
         selectedEdgeForDelete={selectedEdgeForDelete}
       />

@@ -1,12 +1,12 @@
 import { useCallback, useState, useEffect } from 'react';
-import { 
-  useNodesState, 
-  useEdgesState, 
-  addEdge, 
-  Connection, 
-  Edge, 
-  Node, 
-  ReactFlowInstance 
+import {
+  useNodesState,
+  useEdgesState,
+  addEdge,
+  Connection,
+  Edge,
+  Node,
+  ReactFlowInstance
 } from 'reactflow';
 import { generateNodeId, generateEdgeId } from '../utils/idGenerator';
 import { getEdgeLabelBackgroundColor } from '../utils/themeColors';
@@ -27,11 +27,11 @@ const initialNodes: Node[] = [
 ];
 
 const initialEdges: Edge[] = [
-  { 
-    id: generateEdgeId(), 
-    source: initialNodes[0].id, 
-    target: initialNodes[1].id, 
-    type: 'custom-label' 
+  {
+    id: generateEdgeId(),
+    source: initialNodes[0].id,
+    target: initialNodes[1].id,
+    type: 'custom-label'
   },
 ];
 
@@ -52,14 +52,14 @@ export const useDiagram = () => {
   const onConnect = useCallback(
     (params: Edge | Connection) => {
       if (!params.source || !params.target) return;
-      
+
       const newEdge = {
         ...params,
         id: generateEdgeId(),
         type: 'custom-label',
       };
       setEdges((eds) => addEdge(newEdge, eds));
-    }, 
+    },
     [setEdges]
   );
 
@@ -120,7 +120,7 @@ export const useDiagram = () => {
 
   const deleteNodeFromContextMenu = useCallback(() => {
     if (!selectedNodeForDelete) return;
-    
+
     setNodes((nds) => nds.filter((n) => n.id !== selectedNodeForDelete));
     setEdges((eds) => eds.filter((e) => e.source !== selectedNodeForDelete && e.target !== selectedNodeForDelete));
     closeContextMenu();
@@ -128,27 +128,8 @@ export const useDiagram = () => {
 
   const deleteEdgeFromContextMenu = useCallback(() => {
     if (!selectedEdgeForDelete) return;
-    
+
     setEdges((eds) => eds.filter((e) => e.id !== selectedEdgeForDelete));
-    closeContextMenu();
-  }, [selectedEdgeForDelete, setEdges, closeContextMenu]);
-
-  const toggleEdgeDirection = useCallback(() => {
-    if (!selectedEdgeForDelete) return;
-
-    setEdges((eds) =>
-      eds.map((edge) =>
-        edge.id === selectedEdgeForDelete
-          ? {
-              ...edge,
-              data: {
-                ...edge.data,
-                isReversed: !edge.data?.isReversed, // Cambiamos la orientación
-              },
-            }
-          : edge
-      )
-    );
     closeContextMenu();
   }, [selectedEdgeForDelete, setEdges, closeContextMenu]);
 
@@ -177,13 +158,13 @@ export const useDiagram = () => {
   }, [setNodes]);
 
   const updateNodeData = useCallback((nodeId: string, newData: any) => {
-    setNodes((nds) => nds.map((n) => 
+    setNodes((nds) => nds.map((n) =>
       n.id === nodeId ? { ...n, data: newData } : n
     ));
   }, [setNodes]);
 
   const updateEdgeData = useCallback((edgeId: string, newData: any) => {
-    setEdges((eds) => eds.map((e) => 
+    setEdges((eds) => eds.map((e) =>
       e.id === edgeId ? newData : e
     ));
   }, [setEdges]);
@@ -198,24 +179,20 @@ export const useDiagram = () => {
     setSelectedEdgeForEdit(null);
   }, []);
 
-  const importFromJson = (file: File) => {
-    const reader = new FileReader();
-    reader.onload = (event) => {
-      try {
-        const json = JSON.parse(event.target?.result as string);
-        if (json.nodes && json.edges) {
-          setNodes(json.nodes as Node[]);
-          setEdges(json.edges as Edge[]);
-        } else {
-          alert('El archivo no contiene un formato válido de nodos y edges.');
-        }
-      } catch (error) {
-        console.error('Error al importar el archivo JSON:', error);
-        alert('Error al leer el archivo JSON.');
+  // Mejora que solo recibe objeto JSON y maneje errores y alertas
+  const importFromJson = useCallback((json: any) => {
+    try {
+      if (!json || !json.nodes || !json.edges) {
+        alert('El archivo no contiene un formato válido de nodos y edges.');
+        return;
       }
-    };
-    reader.readAsText(file);
-  };
+      setNodes(json.nodes);
+      setEdges(json.edges);
+    } catch (error) {
+      console.error('Error al importar el JSON:', error);
+      alert('Error al leer el JSON.');
+    }
+  }, []);
 
   return {
     nodes,
@@ -237,7 +214,6 @@ export const useDiagram = () => {
     createNodeFromContextMenu,
     deleteNodeFromContextMenu,
     deleteEdgeFromContextMenu,
-    toggleEdgeDirection,
     selectedNodeForDelete,
     selectedEdgeForDelete,
     addNode,

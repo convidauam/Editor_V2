@@ -7,7 +7,10 @@ import { exportToJson, exportToPng, exportToSvg } from '../../utils/export';
 interface ToolbarProps {
   reactFlowInstance: ReactFlowInstance | null;
   diagramRef: React.RefObject<HTMLDivElement>;
-  onImportJson: (file: File) => void; // Nueva prop para importar JSON
+  // onImportJson: (file: File) => void; // Nueva prop para importar JSON
+  onImportJson: (json: object) => void;
+  // Se necesita aceptar tanto files como objetos JSON
+
 }
 
 export const Toolbar: React.FC<ToolbarProps> = ({ reactFlowInstance, diagramRef, onImportJson }) => {
@@ -23,21 +26,29 @@ export const Toolbar: React.FC<ToolbarProps> = ({ reactFlowInstance, diagramRef,
     exportToSvg(diagramRef.current);
   };
 
+  // Cambios para manejar la importación de JSON
   const handleImportJson = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
-      onImportJson(file);
+      file.text().then((text) => {
+        try {
+          const json = JSON.parse(text);
+          onImportJson(json);
+        } catch (err) {
+          console.error("Archivo JSON inválido", err);
+        }
+      });
     }
   };
 
   return (
-    <Stack 
-      direction="row" 
-      spacing={2} 
-      sx={{ 
-        position: 'absolute', 
-        zIndex: 10, 
-        top: 16, 
+    <Stack
+      direction="row"
+      spacing={2}
+      sx={{
+        position: 'absolute',
+        zIndex: 10,
+        top: 16,
         left: 16,
         backgroundColor: 'background.paper',
         padding: 1,
@@ -45,27 +56,27 @@ export const Toolbar: React.FC<ToolbarProps> = ({ reactFlowInstance, diagramRef,
         boxShadow: 2,
       }}
     >
-      <Button 
-        variant="contained" 
-        color="primary" 
+      <Button
+        variant="contained"
+        color="primary"
         startIcon={<Code />}
         onClick={handleExportJson}
         size="small"
       >
         Exportar JSON
       </Button>
-      <Button 
-        variant="contained" 
-        color="secondary" 
+      <Button
+        variant="contained"
+        color="secondary"
         startIcon={<Image />}
         onClick={handleExportPng}
         size="small"
       >
         Exportar PNG
       </Button>
-      <Button 
-        variant="outlined" 
-        color="primary" 
+      <Button
+        variant="outlined"
+        color="primary"
         startIcon={<Download />}
         onClick={handleExportSvg}
         size="small"
