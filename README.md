@@ -1,4 +1,4 @@
-Wiki ---> https://wikiabeja.apuntia.com/es/componentes/editor
+Wiki ---> [Componentes Editor](https://wikiabeja.apuntia.com/es/componentes/editor)
 
 
 ## Funcionalidades
@@ -212,7 +212,7 @@ const importFromJson = (file: File) => {
 
 
 
-### ** Estructura del Archivo JSON**
+### **Estructura del Archivo JSON**
 
 El archivo JSON de entrada debe incluir la propiedad `iconUrl` en los nodos para que se rendericen los iconos. Un ejemplo de estructura válida:
 
@@ -246,52 +246,126 @@ El archivo JSON de entrada debe incluir la propiedad `iconUrl` en los nodos para
 
 ---
 
+## Getting Started with [mise](https://mise.jdx.dev/) (Recommended)
 
-Dejo aqui el readme default por si les sirve:
+The easiest way to set up and run this project is with [mise](https://mise.jdx.dev/getting-started.html#installing-mise-cli)
 
-# Getting Started with Create React App
+First, trust the project environment:
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+```bash
+mise trust
+```
 
-## Available Scripts
+You can explore the available tasks with:
+
+```bash
+mise tasks
+```
+
+### Main Tasks
+
+- **Setup the environment:**
+
+    Installs all dependencies (including optional groups defined in the project):
+
+    ```bash
+    mise setup
+    ```
+    
+- **Start the development server:**
+    
+    Runs the project locally using the default dev launcher:
+    
+    ```bash
+    mise dev
+    ```
+    
+- **Run tests:**
+    
+    Launches the test suite:
+
+    ```bash
+    mise test
+    ```
+
+- **Docker build & run:**
+
+    Builds the project Docker image and starts a container:
+
+    ```bash
+    mise docker
+    ```
+
+That’s it — with mise everything is automated and reproducible.
+
+---
+
+## **Manual Alternative (without mise)**
+
+If you prefer to run the project without *mise*, you can use the standard [Create React App](https://github.com/facebook/create-react-app) workflow.
+
+### Installation
+
+Make sure you have **Node.js** and **npm** installed.  
+Then, install the dependencies:
+
+```bash
+npm ci
+````
+
+> [!TIP]
+> We recommend `npm ci` instead of `npm install` to ensure a clean, reproducible installation using the lockfile.
+
+### **Available Scripts**
 
 In the project directory, you can run:
 
-### `npm start`
+- **Start the development server:**
+	```
+	npm start
+	```
+	- Runs the app in development mode.
+	    Open [http://localhost:3000](http://localhost:3000) to view it in your browser. The page will reload on changes, and lint errors will show in the console.
+    
+- **Run tests:**
+	```
+	npm test
+	```
+	- Launches the test runner in interactive watch mode.
+	    See the [testing guide](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+    
+- **Build for production:**
+	```
+	npm run build
+	```
+	- Builds the app for production into the build folder.
+	    The output is minified, optimized, and ready to deploy. More details: [deployment guide](https://facebook.github.io/create-react-app/docs/deployment).
+    
+- **Eject configuration (advanced):**
+	```
+	npm run eject
+	```
+	- **Warning:** This is a one-way operation. Once you eject, you can’t go back.
+	    It copies all configuration files (Webpack, Babel, ESLint, etc.) into your project so you have full control.
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+### **Learn More**
+- [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started)
+- [React documentation](https://reactjs.org/)
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+---
 
-### `npm test`
+## **Running with Docker (standalone)**
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+1. Go to the project directory.
+2. Build the Docker image:
+    ```bash
+    docker build -t "editor-comb:latest" .
+    ```
 
-### `npm run build`
+3. Run the container:
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+    ```bash
+    docker run --name editor-comb -p 80:80 -d --rm editor-comb:latest
+    ```
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
-
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
-
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
+4. Open your browser at: [http://127.0.0.1:80](http://127.0.0.1:80)
