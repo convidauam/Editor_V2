@@ -1,0 +1,28 @@
+[tools]
+node = "24"
+
+[tasks.setup]
+description = "Install dependencies for the project"
+run = "npm ci"
+
+[tasks.build]
+description = "Build the project for production"
+run = "npm run build"
+
+[tasks.dev]
+description = "Start the development environment for the project"
+run = "npm start"
+
+[tasks.test]
+description = "Run the test suite"
+run = "npm test"
+
+[tasks.docker]
+description = "Build and run the Docker container"
+run = """
+docker build -t editor-comb:latest .
+docker run --name editor-comb -p 80:80 -d --rm editor-comb:latest
+"""
+
+[settings]
+idiomatic_version_file_enable_tools = ["node"]
