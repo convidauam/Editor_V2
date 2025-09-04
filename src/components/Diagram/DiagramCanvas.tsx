@@ -1,10 +1,12 @@
-import React, { useCallback, useEffect, useRef } from 'react';
+import { useEffect } from 'react';
+import React, { useCallback, useRef } from 'react';
 import ReactFlow, {
   ReactFlowProvider,
   Background as ReactFlowBackground,
   Controls,
   MiniMap,
   BackgroundVariant,
+  Connection,
 } from 'reactflow';
 import 'reactflow/dist/style.css';
 import { useDiagram } from '../../hooks/useDiagram';
@@ -15,7 +17,6 @@ import { CustomNode } from '../NodeTypes/CustomNode';
 import { CustomEdgeWithLabel } from '../EdgeTypes/CustomEdgeWithLabel';
 import { useTheme } from '@mui/material/styles';
 import { Toolbar } from '../Toolbar/Toolbar';
-import { json } from 'stream/consumers';
 
 const nodeTypes = {
   custom: CustomNode,
@@ -23,6 +24,11 @@ const nodeTypes = {
 
 const edgeTypes = {
   'custom-label': CustomEdgeWithLabel,
+};
+
+const isValidConnection = (connection: Connection) => {
+  // Permitir conexiones entre cualquier source y cualquier target
+  return true;
 };
 
 export const DiagramCanvas: React.FC = () => {
@@ -57,15 +63,28 @@ export const DiagramCanvas: React.FC = () => {
     closeEditModal,
     closeEdgeEditModal,
     importFromJson,
+    toggleEdgeDirection,
+    setNodes,
+    setEdges
   } = useDiagram();
 
-  // Conexión entre api.py e importación automática de JSON
   useEffect(() => {
-    fetch("http://localhost:6543/api/v1/honeycombs/default")
+    fetch('http://localhost:6543/api/v1/honeycombs/panal-de-juegos')
       .then((res) => res.json())
-      .then((json) => importFromJson(json))
-      .catch((err) => console.error("Error al cargar honeycomb:", err));
-  }, [importFromJson]);
+      .then((json) => {
+        if (json.nodes && json.edges) {
+          setNodes(json.nodes);
+          setEdges(json.edges);
+        } else {
+          alert('El JSON recibido del backend no tiene el formato esperado.');
+        }
+      })
+      .catch((err) => {
+        console.error('Error al importar JSON desde el backend:', err);
+      });
+    // Solo una vez al montar
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const onPaneClick = useCallback(() => {
     closeContextMenu();
@@ -95,8 +114,9 @@ export const DiagramCanvas: React.FC = () => {
           nodeTypes={nodeTypes}
           edgeTypes={edgeTypes}
           fitView
+          isValidConnection={isValidConnection}
           style={{
-            backgroundColor: theme.palette.background.default,
+            backgroundColor: '#6b6454', // Color gris neutro
           }}
         >
           <ReactFlowBackground
@@ -120,6 +140,7 @@ export const DiagramCanvas: React.FC = () => {
         onCreateNode={createNodeFromContextMenu}
         onDeleteNode={deleteNodeFromContextMenu}
         onDeleteEdge={deleteEdgeFromContextMenu}
+        onToggleEdgeDirection={toggleEdgeDirection} // Pasamos la nueva función
         selectedNodeForDelete={selectedNodeForDelete}
         selectedEdgeForDelete={selectedEdgeForDelete}
       />

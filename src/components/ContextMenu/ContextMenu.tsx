@@ -1,6 +1,6 @@
 import React from 'react';
 import { Menu, MenuItem, ListItemIcon, ListItemText } from '@mui/material';
-import { Add, Delete } from '@mui/icons-material';
+import { Add, Delete, SwapHoriz } from '@mui/icons-material'; // Importamos SwapHoriz para el ícono
 
 interface ContextMenuProps {
   anchorPosition: { x: number; y: number } | null;
@@ -8,6 +8,7 @@ interface ContextMenuProps {
   onCreateNode: () => void;
   onDeleteNode: () => void;
   onDeleteEdge: () => void;
+  onToggleEdgeDirection: () => void; // Nueva función para cambiar la orientación
   selectedNodeForDelete: string | null;
   selectedEdgeForDelete: string | null;
 }
@@ -18,6 +19,7 @@ export const ContextMenu: React.FC<ContextMenuProps> = ({
   onCreateNode,
   onDeleteNode,
   onDeleteEdge,
+  onToggleEdgeDirection, // Nueva prop
   selectedNodeForDelete,
   selectedEdgeForDelete,
 }) => {
@@ -33,6 +35,11 @@ export const ContextMenu: React.FC<ContextMenuProps> = ({
 
   const handleDeleteEdge = () => {
     onDeleteEdge();
+    onClose();
+  };
+
+  const handleToggleEdgeDirection = () => {
+    onToggleEdgeDirection();
     onClose();
   };
 
@@ -66,13 +73,21 @@ export const ContextMenu: React.FC<ContextMenuProps> = ({
       )}
 
       {selectedEdgeForDelete && (
-        <MenuItem onClick={handleDeleteEdge}>
-          <ListItemIcon>
-            <Delete />
-          </ListItemIcon>
-          <ListItemText primary="Eliminar Línea" />
-        </MenuItem>
+        <>
+          <MenuItem onClick={handleDeleteEdge}>
+            <ListItemIcon>
+              <Delete />
+            </ListItemIcon>
+            <ListItemText primary="Eliminar Línea" />
+          </MenuItem>
+          <MenuItem onClick={handleToggleEdgeDirection}>
+            <ListItemIcon>
+              <SwapHoriz />
+            </ListItemIcon>
+            <ListItemText primary="Cambiar Orientación" />
+          </MenuItem>
+        </>
       )}
     </Menu>
   );
-}; 
+};
