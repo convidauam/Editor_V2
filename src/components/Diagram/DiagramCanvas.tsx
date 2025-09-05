@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import React, { useCallback, useRef } from 'react';
 import ReactFlow, {
   ReactFlowProvider,
@@ -63,7 +64,27 @@ export const DiagramCanvas: React.FC = () => {
     closeEdgeEditModal,
     importFromJson,
     toggleEdgeDirection,
+    setNodes,
+    setEdges
   } = useDiagram();
+
+  useEffect(() => {
+    fetch('http://localhost:6543/api/v1/honeycombs/panal-de-juegos')
+      .then((res) => res.json())
+      .then((json) => {
+        if (json.nodes && json.edges) {
+          setNodes(json.nodes);
+          setEdges(json.edges);
+        } else {
+          alert('El JSON recibido del backend no tiene el formato esperado.');
+        }
+      })
+      .catch((err) => {
+        console.error('Error al importar JSON desde el backend:', err);
+      });
+    // Solo una vez al montar
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const onPaneClick = useCallback(() => {
     closeContextMenu();
