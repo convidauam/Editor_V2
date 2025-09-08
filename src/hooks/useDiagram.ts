@@ -10,6 +10,8 @@ import {
 } from 'reactflow';
 import { generateNodeId, generateEdgeId } from '../utils/idGenerator';
 import { getEdgeLabelBackgroundColor } from '../utils/themeColors';
+import { Menu, MenuItem, ListItemIcon, ListItemText } from '@mui/material';
+import { ArrowForward } from '@mui/icons-material';
 
 const initialNodes: Node[] = [
   {
@@ -152,6 +154,19 @@ export const useDiagram = () => {
     closeContextMenu();
   }, [selectedEdgeForDelete, setEdges, closeContextMenu]);
 
+  const toggleArrowOnEdge = useCallback(() => {
+    if (!selectedEdgeForDelete) return;
+
+    setEdges((eds: Edge[]) =>
+      eds.map((edge: Edge) =>
+        edge.id === selectedEdgeForDelete
+          ? { ...edge, data: { ...edge.data, hasArrow: !edge.data?.hasArrow } }
+          : edge
+      )
+    );
+    closeContextMenu();
+  }, [selectedEdgeForDelete, setEdges, closeContextMenu]);
+
   const addNode = useCallback((type: string = 'custom', position = { x: 100, y: 100 }) => {
     const newNode: Node = {
       id: generateNodeId(),
@@ -238,6 +253,7 @@ export const useDiagram = () => {
     deleteNodeFromContextMenu,
     deleteEdgeFromContextMenu,
     toggleEdgeDirection,
+    toggleArrowOnEdge,
     selectedNodeForDelete,
     selectedEdgeForDelete,
     addNode,
@@ -254,3 +270,4 @@ export const useDiagram = () => {
     importFromJson,
   };
 };
+
