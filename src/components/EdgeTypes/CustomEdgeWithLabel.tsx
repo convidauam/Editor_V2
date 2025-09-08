@@ -25,7 +25,7 @@ export const CustomEdgeWithLabel: React.FC<EdgeProps> = ({
 
   const markerId = `arrowhead-${id}`;
   const isReversed = data?.isReversed; // Determina si la flecha está invertida
-  const hasArrow = data?.hasArrow ?? true; // Por defecto, las conexiones tienen flecha
+  const hasArrow = data?.hasArrow ?? false; // Por defecto, las conexiones no tienen flecha
 
   // Calcular el degradado para la caja del texto
   const backgroundGradient = getEdgeLabelBackgroundColor(data?.source, data?.target, data?.nodes);
@@ -39,8 +39,8 @@ export const CustomEdgeWithLabel: React.FC<EdgeProps> = ({
         stroke="black"
         strokeWidth={2}
         style={style}
-        markerEnd={hasArrow ? `url(#${markerId})` : undefined} // Renderizamos la flecha solo si `hasArrow` es true
-        markerStart={isReversed ? `url(#${markerId})` : undefined} // Flecha en el source si está invertida
+        markerEnd={hasArrow && !isReversed ? `url(#${markerId})` : undefined} // Flecha al final si no está invertida
+        markerStart={hasArrow && isReversed ? `url(#${markerId})` : undefined} // Flecha al inicio si está invertida
       />
       <svg>
         <defs>
@@ -48,8 +48,8 @@ export const CustomEdgeWithLabel: React.FC<EdgeProps> = ({
             id={markerId}
             markerWidth="10"
             markerHeight="7"
-            refX={isReversed ? 0 : 10} // Ajustar la posición horizontal del marcador
-            refY={3.5} // Centrar verticalmente el marcador
+            refX={isReversed ? 0 : 10} // Cambiar la posición según la orientación
+            refY="3.5" // Centrar el marcador verticalmente
             orient="auto"
           >
             <polygon points="0 0, 10 3.5, 0 7" fill="black" />
