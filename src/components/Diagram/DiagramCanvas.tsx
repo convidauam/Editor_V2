@@ -71,22 +71,48 @@ export const DiagramCanvas: React.FC = () => {
   } = useDiagram();
 
   useEffect(() => {
-    fetch('http://localhost:6543/api/v1/honeycombs/panal-de-juegos')
-      .then((res) => res.json())
-      .then((json) => {
+    const loadDiagram = async () => {
+      try {
+        // Intentar cargar el diagrama desde el backend
+        const response = await fetch('http://localhost:6543/api/v1/honeycombs/panal-de-juegos');
+        if (!response.ok) {
+          throw new Error(`Error al cargar desde el backend: ${response.statusText}`);
+        }
+        const json = await response.json();
         if (json.nodes && json.edges) {
           setNodes(json.nodes);
           setEdges(json.edges);
+          console.log('Diagrama cargado desde el backend.');
         } else {
-          alert('El JSON recibido del backend no tiene el formato esperado.');
+          throw new Error('El JSON recibido del backend no tiene el formato esperado.');
         }
-      })
-      .catch((err) => {
-        console.error('Error al importar JSON desde el backend:', err);
-      });
-    // Solo una vez al montar
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+      } catch (error) {
+        console.error('Error al cargar el diagrama desde el backend:', error);
+        alert('No se pudo cargar el diagrama desde el backend. Cargando diagrama de respaldo.');
+
+        // Cargar el diagrama de respaldo desde public/Diagramas
+        try {
+          const fallbackResponse = await fetch('/Diagramas/DiagramaTutorial.json');
+          if (!fallbackResponse.ok) {
+            throw new Error(`Error al cargar el diagrama de respaldo: ${fallbackResponse.statusText}`);
+          }
+          const fallbackJson = await fallbackResponse.json();
+          if (fallbackJson.nodes && fallbackJson.edges) {
+            setNodes(fallbackJson.nodes);
+            setEdges(fallbackJson.edges);
+            console.log('Diagrama cargado desde el archivo de respaldo.');
+          } else {
+            throw new Error('El JSON de respaldo no tiene el formato esperado.');
+          }
+        } catch (fallbackError) {
+          console.error('Error al cargar el diagrama de respaldo:', fallbackError);
+          alert('No se pudo cargar ningún diagrama.');
+        }
+      }
+    };
+
+    loadDiagram();
+  }, [setNodes, setEdges]);
 
   const onPaneClick = useCallback(() => {
     closeContextMenu();
