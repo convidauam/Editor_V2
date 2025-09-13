@@ -50,16 +50,24 @@ export const useDiagram = () => {
   // Ya no necesitamos el useEffect para actualizar colores, el componente CustomEdgeWithLabel lo maneja
 
   const onConnect = useCallback(
-    (params: Edge | Connection) => {
-      if (!params.source || !params.target) return;
-      
-      const newEdge = {
-        ...params,
-        id: generateEdgeId(),
-        type: 'custom-label',
-      };
-      setEdges((eds) => addEdge(newEdge, eds));
-    }, 
+    (connection: Connection) => {
+      setEdges((prevEdges) => [
+        ...prevEdges,
+        {
+          id: `${connection.source ?? ''}-${connection.sourceHandle ?? ''}-${connection.target ?? ''}-${connection.targetHandle ?? ''}`,
+          source: connection.source ?? '', // Aseguramos que sea una cadena
+          target: connection.target ?? '', // Aseguramos que sea una cadena
+          sourceHandle: connection.sourceHandle ?? '', // Aseguramos que sea una cadena
+          targetHandle: connection.targetHandle ?? '', // Aseguramos que sea una cadena
+          type: 'default', // Tipo de línea normal
+          style: {
+            stroke: '#000000', // Color negro
+            strokeWidth: 2, // Ancho de línea consistente
+          },
+          markerEnd: undefined, // Sin flecha
+        } as Edge, // Aseguramos que el objeto cumple con el tipo Edge
+      ]);
+    },
     [setEdges]
   );
 

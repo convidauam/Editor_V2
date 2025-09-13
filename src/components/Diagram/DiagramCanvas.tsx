@@ -17,6 +17,7 @@ import { CustomNode } from '../NodeTypes/CustomNode';
 import { CustomEdgeWithLabel } from '../EdgeTypes/CustomEdgeWithLabel';
 import { useTheme } from '@mui/material/styles';
 import { Toolbar } from '../Toolbar/Toolbar';
+import ArrowMarker from '../ArrowMarker/ArrowMarker';
 
 const nodeTypes = {
   custom: CustomNode,
@@ -24,6 +25,7 @@ const nodeTypes = {
 
 const edgeTypes = {
   'custom-label': CustomEdgeWithLabel,
+  arrow: CustomEdgeWithLabel, // Línea tipo flecha
 };
 
 const isValidConnection = (connection: Connection) => {
@@ -39,7 +41,7 @@ export const DiagramCanvas: React.FC = () => {
     edges,
     onNodesChange,
     onEdgesChange,
-    onConnect,
+    onConnect, // Usar el onConnect del hook
     onNodeDoubleClick,
     onEdgeDoubleClick,
     onPaneContextMenu,
@@ -65,7 +67,7 @@ export const DiagramCanvas: React.FC = () => {
     importFromJson,
     toggleEdgeDirection,
     setNodes,
-    setEdges
+    setEdges,
   } = useDiagram();
 
   useEffect(() => {
@@ -89,6 +91,28 @@ export const DiagramCanvas: React.FC = () => {
   const onPaneClick = useCallback(() => {
     closeContextMenu();
   }, [closeContextMenu]);
+
+  // Nueva función para alternar el tipo de línea
+  const toggleEdgeType = useCallback(() => {
+    if (!selectedEdgeForDelete) return;
+
+    setEdges((prevEdges) =>
+      prevEdges.map((edge) =>
+        edge.id === selectedEdgeForDelete
+          ? {
+              ...edge,
+              type: edge.type === 'default' ? 'arrow' : 'default', // Alternar entre 'default' y 'arrow'
+              style: {
+                stroke: '#000000', // Color negro para ambas líneas
+                strokeWidth: 2, // Ancho de línea consistente
+              },
+              markerEnd: edge.type === 'default' ? 'url(#arrowhead)' : undefined, // Flecha solo para 'arrow'
+            }
+          : edge
+      )
+    );
+    closeContextMenu();
+  }, [selectedEdgeForDelete, setEdges, closeContextMenu]);
 
   return (
     <div ref={diagramRef} style={{ width: '100%', height: '100vh', position: 'relative' }}>
@@ -116,7 +140,7 @@ export const DiagramCanvas: React.FC = () => {
           fitView
           isValidConnection={isValidConnection}
           style={{
-            backgroundColor: '#6b6454', // Color gris neutro
+            backgroundColor: '#636362', // puse un color menos feo 
           }}
         >
           <ReactFlowBackground
@@ -125,6 +149,7 @@ export const DiagramCanvas: React.FC = () => {
             size={1}
             color={theme.palette.divider}
           />
+          <ArrowMarker id="arrowhead" />
           <Controls />
           <MiniMap
             style={{
@@ -143,6 +168,7 @@ export const DiagramCanvas: React.FC = () => {
         onToggleEdgeDirection={toggleEdgeDirection} // Pasamos la nueva función
         selectedNodeForDelete={selectedNodeForDelete}
         selectedEdgeForDelete={selectedEdgeForDelete}
+        onToggleEdgeType={toggleEdgeType} // Pasar funcion de alternar tipo de línea
       />
 
       <NodeEditModal

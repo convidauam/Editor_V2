@@ -1,6 +1,6 @@
 import React from 'react';
 import { Menu, MenuItem, ListItemIcon, ListItemText } from '@mui/material';
-import { Add, Delete, SwapHoriz } from '@mui/icons-material'; // Importamos SwapHoriz para el ícono
+import { Add, Delete, SwapHoriz, LineStyle } from '@mui/icons-material';
 
 interface ContextMenuProps {
   anchorPosition: { x: number; y: number } | null;
@@ -8,7 +8,8 @@ interface ContextMenuProps {
   onCreateNode: () => void;
   onDeleteNode: () => void;
   onDeleteEdge: () => void;
-  onToggleEdgeDirection: () => void; // Nueva función para cambiar la orientación
+  onToggleEdgeDirection: () => void;
+  onToggleEdgeType: () => void; // Nueva función para alternar el tipo de línea
   selectedNodeForDelete: string | null;
   selectedEdgeForDelete: string | null;
 }
@@ -19,7 +20,8 @@ export const ContextMenu: React.FC<ContextMenuProps> = ({
   onCreateNode,
   onDeleteNode,
   onDeleteEdge,
-  onToggleEdgeDirection, // Nueva prop
+  onToggleEdgeDirection,
+  onToggleEdgeType, // Nueva prop
   selectedNodeForDelete,
   selectedEdgeForDelete,
 }) => {
@@ -40,6 +42,11 @@ export const ContextMenu: React.FC<ContextMenuProps> = ({
 
   const handleToggleEdgeDirection = () => {
     onToggleEdgeDirection();
+    onClose();
+  };
+
+  const handleToggleEdgeType = () => {
+    onToggleEdgeType();
     onClose();
   };
 
@@ -85,6 +92,12 @@ export const ContextMenu: React.FC<ContextMenuProps> = ({
               <SwapHoriz />
             </ListItemIcon>
             <ListItemText primary="Cambiar Orientación" />
+          </MenuItem>
+          <MenuItem onClick={handleToggleEdgeType}>
+            <ListItemIcon>
+              <LineStyle />
+            </ListItemIcon>
+            <ListItemText primary="Alternar Tipo de Línea" />
           </MenuItem>
         </>
       )}
