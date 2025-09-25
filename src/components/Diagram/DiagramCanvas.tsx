@@ -64,7 +64,7 @@ export const DiagramCanvas: React.FC = () => {
     isEdgeEditModalOpen,
     closeEditModal,
     closeEdgeEditModal,
-    importFromJson,
+    importFromJson,    
     toggleEdgeDirection,
     setNodes,
     setEdges,
