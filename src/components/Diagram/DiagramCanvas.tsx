@@ -74,18 +74,21 @@ export const DiagramCanvas: React.FC = () => {
     const loadDiagram = async () => {
       try {
         // Intentar cargar el diagrama desde el backend
-        const response = await fetch('http://localhost:6543/api/v1/honeycombs/panal-de-juegos');
-        if (!response.ok) {
-          throw new Error(`Error al cargar desde el backend: ${response.statusText}`);
-        }
-        const json = await response.json();
-        if (json.nodes && json.edges) {
-          setNodes(json.nodes);
-          setEdges(json.edges);
-          console.log('Diagrama cargado desde el backend.');
-        } else {
-          throw new Error('El JSON recibido del backend no tiene el formato esperado.');
-        }
+	const start_url = process.env.REACT_APP_START_URL;
+	  if (start_url) {
+	      const response = await fetch(start_url);
+	      if (!response.ok) {
+		  throw new Error(`Error al cargar desde el backend: ${response.statusText}`);
+	      }
+	      const json = await response.json();
+	      if (json.nodes && json.edges) {
+		  setNodes(json.nodes);
+		  setEdges(json.edges);
+		  console.log('Diagrama cargado desde el backend.');
+	      } else {
+		  throw new Error('El JSON recibido del backend no tiene el formato esperado.');
+	      }
+	  }
       } catch (error) {
         console.error('Error al cargar el diagrama desde el backend:', error);
         alert('No se pudo cargar el diagrama desde el backend. Cargando diagrama de respaldo.');
