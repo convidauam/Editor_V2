@@ -1,30 +1,16 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { Menu, MenuItem, ListItemIcon, ListItemText } from '@mui/material';
-import { Add, Delete, SwapHoriz, ArrowForward } from '@mui/icons-material';
-import { Edge, Node } from 'reactflow';
-import { THEME_COLORS, getThemeColor, THEME_COLOR_NAMES } from '../../utils/themeColors';
-import {
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  TextField,
-  Button,
-  Box,
-  FormControl,
-  InputLabel,
-  Select,
-} from '@mui/material';
+import { Add, Delete, SwapHoriz, LineStyle, Edit } from '@mui/icons-material';
 
 interface ContextMenuProps {
   anchorPosition: { x: number; y: number } | null;
   onClose: () => void;
   onCreateNode: () => void;
   onDeleteNode: () => void;
+  onEditNode: () => void; // <-- NUEVO
   onDeleteEdge: () => void;
   onToggleEdgeDirection: () => void;
-  onToggleArrow: () => void;
-  setEdges: (updater: (edges: Edge[]) => Edge[]) => void; // Tipo corregido
+  onToggleEdgeType: () => void;
   selectedNodeForDelete: string | null;
   selectedEdgeForDelete: string | null;
 }
@@ -34,10 +20,10 @@ export const ContextMenu: React.FC<ContextMenuProps> = ({
   onClose,
   onCreateNode,
   onDeleteNode,
+  onEditNode, // <-- NUEVO
   onDeleteEdge,
   onToggleEdgeDirection,
-  onToggleArrow,
-  setEdges,
+  onToggleEdgeType,
   selectedNodeForDelete,
   selectedEdgeForDelete,
 }) => {
@@ -48,6 +34,11 @@ export const ContextMenu: React.FC<ContextMenuProps> = ({
 
   const handleDeleteNode = () => {
     onDeleteNode();
+    onClose();
+  };
+
+  const handleEditNode = () => {
+    onEditNode();
     onClose();
   };
 
@@ -76,22 +67,9 @@ export const ContextMenu: React.FC<ContextMenuProps> = ({
     onClose();
   };
 
-  const handleToggleArrow = () => {
-    if (!selectedEdgeForDelete) return;
-
-    setEdges((edges) => {
-      const updatedEdges = edges.map((edge) =>
-        edge.id === selectedEdgeForDelete
-          ? { ...edge, data: { ...edge.data, hasArrow: !edge.data?.hasArrow } }
-          : edge
-      );
-      return updatedEdges;
-    });
-
-    // Cerrar el menú después de un pequeño retraso para garantizar que el estado se actualice
-    setTimeout(() => {
-      onClose();
-    }, 50); // Aseguramos un pequeño retraso para que el estado se propague
+  const handleToggleEdgeType = () => {
+    onToggleEdgeType();
+    onClose();
   };
 
   return (
@@ -115,12 +93,20 @@ export const ContextMenu: React.FC<ContextMenuProps> = ({
       )}
 
       {selectedNodeForDelete && (
-        <MenuItem onClick={handleDeleteNode}>
-          <ListItemIcon>
-            <Delete />
-          </ListItemIcon>
-          <ListItemText primary="Eliminar Nodo" />
-        </MenuItem>
+        <>
+          <MenuItem onClick={handleDeleteNode}>
+            <ListItemIcon>
+              <Delete />
+            </ListItemIcon>
+            <ListItemText primary="Eliminar Nodo" />
+          </MenuItem>
+          <MenuItem onClick={handleEditNode}>
+            <ListItemIcon>
+              <Edit />
+            </ListItemIcon>
+            <ListItemText primary="Editar Nodo" />
+          </MenuItem>
+        </>
       )}
 
       {selectedEdgeForDelete && (
@@ -137,11 +123,11 @@ export const ContextMenu: React.FC<ContextMenuProps> = ({
             </ListItemIcon>
             <ListItemText primary="Cambiar Orientación" />
           </MenuItem>
-          <MenuItem onClick={handleToggleArrow}>
+          <MenuItem onClick={handleToggleEdgeType}>
             <ListItemIcon>
-              <ArrowForward />
+              <LineStyle />
             </ListItemIcon>
-            <ListItemText primary="Alternar Flecha" />
+            <ListItemText primary="Alternar Tipo de Línea" />
           </MenuItem>
         </>
       )}

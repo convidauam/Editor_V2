@@ -17,6 +17,7 @@ import { CustomNode } from '../NodeTypes/CustomNode';
 import { CustomEdgeWithLabel } from '../EdgeTypes/CustomEdgeWithLabel';
 import { useTheme } from '@mui/material/styles';
 import { Toolbar } from '../Toolbar/Toolbar';
+import ArrowMarker from '../ArrowMarker/ArrowMarker';
 
 const nodeTypes = {
   custom: CustomNode,
@@ -24,6 +25,7 @@ const nodeTypes = {
 
 const edgeTypes = {
   'custom-label': CustomEdgeWithLabel,
+  arrow: CustomEdgeWithLabel, // Línea tipo flecha
 };
 
 const isValidConnection = (connection: Connection) => {
@@ -39,7 +41,7 @@ export const DiagramCanvas: React.FC = () => {
     edges,
     onNodesChange,
     onEdgesChange,
-    onConnect,
+    onConnect, // Usar el onConnect del hook
     onNodeDoubleClick,
     onEdgeDoubleClick,
     onPaneContextMenu,
@@ -62,33 +64,90 @@ export const DiagramCanvas: React.FC = () => {
     isEdgeEditModalOpen,
     closeEditModal,
     closeEdgeEditModal,
-    importFromJson,
+    importFromJson,    
     toggleEdgeDirection,
     setNodes,
-    setEdges
+    setEdges,
+    openEditModal,
   } = useDiagram();
 
   useEffect(() => {
-    fetch('http://localhost:6543/api/v1/honeycombs/panal-de-juegos')
-      .then((res) => res.json())
-      .then((json) => {
-        if (json.nodes && json.edges) {
-          setNodes(json.nodes);
-          setEdges(json.edges);
-        } else {
-          alert('El JSON recibido del backend no tiene el formato esperado.');
+    const loadDiagram = async () => {
+      try {
+        // Intentar cargar el diagrama desde el backend si se especifica una URL
+        const start_url = process.env.REACT_APP_START_URL;
+
+        if (start_url) {
+          const response = await fetch(start_url);
+          if (!response.ok) {
+            throw new Error(`Error al cargar desde el backend: ${response.statusText}`);
+          }
+          const json = await response.json();
+          if (json.nodes && json.edges) {
+            setNodes(json.nodes);
+            setEdges(json.edges);
+            console.log('Diagrama cargado desde el backend.');
+            return; // Salir si se cargó correctamente
+          } else {
+            throw new Error('El JSON recibido del backend no tiene el formato esperado.');
+          }
         }
-      })
-      .catch((err) => {
-        console.error('Error al importar JSON desde el backend:', err);
-      });
-    // Solo una vez al montar
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+
+        // Si no se especifica una URL, cargar el diagrama predeterminado
+        console.log('No se especificó una URL. Cargando el diagrama predeterminado.');
+        const fallbackResponse = await fetch('/Diagramas/MapaDeSitioLineasPR.json');
+        if (!fallbackResponse.ok) {
+          throw new Error(`Error al cargar el diagrama predeterminado: ${fallbackResponse.statusText}`);
+        }
+        const fallbackJson = await fallbackResponse.json();
+        if (fallbackJson.nodes && fallbackJson.edges) {
+          setNodes(fallbackJson.nodes);
+          setEdges(fallbackJson.edges);
+          console.log('Diagrama predeterminado cargado correctamente.');
+        } else {
+          throw new Error('El JSON predeterminado no tiene el formato esperado.');
+        }
+      } catch (error) {
+        console.error('Error al cargar el diagrama:', error);
+        alert('No se pudo cargar ningún diagrama.');
+      }
+    };
+
+    loadDiagram();
+  }, [setNodes, setEdges]);
 
   const onPaneClick = useCallback(() => {
     closeContextMenu();
   }, [closeContextMenu]);
+
+  // Nueva función para alternar el tipo de línea
+  const toggleEdgeType = useCallback(() => {
+    if (!selectedEdgeForDelete) return;
+
+    setEdges((prevEdges) =>
+      prevEdges.map((edge) =>
+        edge.id === selectedEdgeForDelete
+          ? {
+              ...edge,
+              type: edge.type === 'default' ? 'arrow' : 'default', // Alternar entre 'default' y 'arrow'
+              style: {
+                stroke: '#000000', // Color negro para ambas líneas
+                strokeWidth: 2, // Ancho de línea consistente
+              },
+              markerEnd: edge.type === 'default' ? 'url(#arrowhead)' : undefined, // Flecha solo para 'arrow'
+            }
+          : edge
+      )
+    );
+    closeContextMenu();
+  }, [selectedEdgeForDelete, setEdges, closeContextMenu]);
+
+  // Función para abrir el modal de edición desde el menú contextual
+  const handleEditNodeFromContextMenu = React.useCallback(() => {
+    if (selectedNodeForDelete) {
+      openEditModal(selectedNodeForDelete);
+    }
+  }, [selectedNodeForDelete, openEditModal]);
 
   return (
     <div ref={diagramRef} style={{ width: '100%', height: '100vh', position: 'relative' }}>
@@ -101,6 +160,10 @@ export const DiagramCanvas: React.FC = () => {
         <ReactFlow
           nodes={nodes}
           edges={edges}
+          onNodeClick={(event, node) => {
+            console.log('Nodo picado:', node.data);
+            console.log("ID del nodo", node.id);
+          }}
           onNodesChange={onNodesChange}
           onEdgesChange={onEdgesChange}
           onConnect={onConnect}
@@ -116,7 +179,7 @@ export const DiagramCanvas: React.FC = () => {
           fitView
           isValidConnection={isValidConnection}
           style={{
-            backgroundColor: '#4f4f4e', // Color gris neutro
+            backgroundColor: '#636362', // puse un color menos feo 
           }}
         >
           <ReactFlowBackground
@@ -125,6 +188,7 @@ export const DiagramCanvas: React.FC = () => {
             size={1}
             color={theme.palette.divider}
           />
+          <ArrowMarker id="arrowhead" />
           <Controls />
           <MiniMap
             style={{
@@ -139,12 +203,12 @@ export const DiagramCanvas: React.FC = () => {
         onClose={closeContextMenu}
         onCreateNode={createNodeFromContextMenu}
         onDeleteNode={deleteNodeFromContextMenu}
+        onEditNode={handleEditNodeFromContextMenu} // <-- NUEVO
         onDeleteEdge={deleteEdgeFromContextMenu}
         onToggleEdgeDirection={toggleEdgeDirection}
-        onToggleArrow={toggleArrowOnEdge} // Pasamos la función para alternar flechas
-        setEdges={setEdges} // Pasamos setEdges como prop
         selectedNodeForDelete={selectedNodeForDelete}
         selectedEdgeForDelete={selectedEdgeForDelete}
+        onToggleEdgeType={toggleEdgeType}
       />
 
       <NodeEditModal

@@ -1,12 +1,12 @@
-import { useCallback, useState, useEffect } from 'react';
-import { 
-  useNodesState, 
-  useEdgesState, 
-  addEdge, 
-  Connection, 
-  Edge, 
-  Node, 
-  ReactFlowInstance 
+import { useCallback, useState } from 'react';
+import {
+  useNodesState,
+  useEdgesState,
+  addEdge,
+  Connection,
+  Edge,
+  Node,
+  ReactFlowInstance,
 } from 'reactflow';
 import { generateNodeId, generateEdgeId } from '../utils/idGenerator';
 import { getEdgeLabelBackgroundColor } from '../utils/themeColors';
@@ -29,45 +29,62 @@ const initialNodes: Node[] = [
 ];
 
 const initialEdges: Edge[] = [
-  { 
-    id: generateEdgeId(), 
-    source: initialNodes[0].id, 
-    target: initialNodes[1].id, 
-    type: 'custom-label' 
+  {
+    id: generateEdgeId(),
+    source: initialNodes[0].id,
+    target: initialNodes[1].id,
+    type: 'custom-label',
   },
 ];
 
-export const useDiagram = () => {
-  const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
-  const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
+export function useDiagram() {
+  // Usa los hooks de ReactFlow para manejar nodos y edges
+  const [nodes, setNodes, onNodesChange] = useNodesState([]);
+  const [edges, setEdges, onEdgesChange] = useEdgesState([]);
   const [reactFlowInstance, setReactFlowInstance] = useState<ReactFlowInstance | null>(null);
   const [contextMenu, setContextMenu] = useState<{ x: number; y: number } | null>(null);
-  const [selectedNodeForEdit, setSelectedNodeForEdit] = useState<Node | null>(null);
-  const [selectedEdgeForEdit, setSelectedEdgeForEdit] = useState<Edge | null>(null);
+
+  // Estado para el modal de edición de nodo
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [selectedNodeForEdit, setSelectedNodeForEdit] = useState<Node | null>(null);
+
+  // Estado para el modal de edición de edge
   const [isEdgeEditModalOpen, setIsEdgeEditModalOpen] = useState(false);
+  const [selectedEdgeForEdit, setSelectedEdgeForEdit] = useState<Edge | null>(null);
+
+  // Estado para el menú contextual
   const [selectedNodeForDelete, setSelectedNodeForDelete] = useState<string | null>(null);
   const [selectedEdgeForDelete, setSelectedEdgeForDelete] = useState<string | null>(null);
 
-  // Ya no necesitamos el useEffect para actualizar colores, el componente CustomEdgeWithLabel lo maneja
-
   const onConnect = useCallback(
-    (params: Edge | Connection) => {
-      if (!params.source || !params.target) return;
-      
-      const newEdge = {
-        ...params,
-        id: generateEdgeId(),
-        type: 'custom-label',
-      };
-      setEdges((eds) => addEdge(newEdge, eds));
-    }, 
+    (connection: Connection) => {
+      setEdges((prevEdges) => [
+        ...prevEdges,
+        {
+          id: `${connection.source ?? ''}-${connection.sourceHandle ?? ''}-${connection.target ?? ''}-${connection.targetHandle ?? ''}`,
+          source: connection.source ?? '', // Aseguramos que sea una cadena
+          target: connection.target ?? '', // Aseguramos que sea una cadena
+          sourceHandle: connection.sourceHandle ?? '', // Aseguramos que sea una cadena
+          targetHandle: connection.targetHandle ?? '', // Aseguramos que sea una cadena
+          type: 'default', // Tipo de línea normal
+          style: {
+            stroke: '#000000', // Color negro
+            strokeWidth: 2, // Ancho de línea consistente
+          },
+          markerEnd: undefined, // Sin flecha
+        } as Edge, // Aseguramos que el objeto cumple con el tipo Edge
+      ]);
+    },
     [setEdges]
   );
 
   const onNodeDoubleClick = useCallback((event: React.MouseEvent, node: Node) => {
-    setSelectedNodeForEdit(node);
-    setIsEditModalOpen(true);
+    event.preventDefault();
+    // Si el nodo tiene una URL, ábrela en una nueva pestaña
+    if (node.data && node.data.url) {
+      window.open(node.data.url, '_blank');
+    }
+    // Si no tiene URL, no hagas nada (no abras el modal)
   }, []);
 
   const onEdgeDoubleClick = useCallback((event: React.MouseEvent, edge: Edge) => {
@@ -191,22 +208,33 @@ export const useDiagram = () => {
     setNodes((nds) => [...nds, newNode]);
   }, [setNodes]);
 
-  const updateNodeData = useCallback((nodeId: string, newData: any) => {
-    setNodes((nds) => nds.map((n) => 
-      n.id === nodeId ? { ...n, data: newData } : n
-    ));
-  }, [setNodes]);
+  // Función para abrir el modal de edición de nodo
+  const openEditModal = (nodeId: string) => {
+    const node = nodes.find((n) => n.id === nodeId) || null;
+    setSelectedNodeForEdit(node);
+    setIsEditModalOpen(true);
+  };
+
+  // Función para cerrar el modal de edición de nodo
+  const closeEditModal = () => {
+    setIsEditModalOpen(false);
+    setSelectedNodeForEdit(null);
+  };
+
+  // Función para actualizar los datos del nodo editado
+  const updateNodeData = (nodeId: string, newData: any) => {
+    setNodes((prevNodes) =>
+      prevNodes.map((node) =>
+        node.id === nodeId ? { ...node, data: newData } : node
+      )
+    );
+  };
 
   const updateEdgeData = useCallback((edgeId: string, newData: any) => {
     setEdges((eds) => eds.map((e) => 
       e.id === edgeId ? newData : e
     ));
   }, [setEdges]);
-
-  const closeEditModal = useCallback(() => {
-    setIsEditModalOpen(false);
-    setSelectedNodeForEdit(null);
-  }, []);
 
   const closeEdgeEditModal = useCallback(() => {
     setIsEdgeEditModalOpen(false);
@@ -231,6 +259,7 @@ export const useDiagram = () => {
     };
     reader.readAsText(file);
   };
+  
 
   return {
     nodes,
@@ -265,6 +294,7 @@ export const useDiagram = () => {
     selectedEdgeForEdit,
     isEditModalOpen,
     isEdgeEditModalOpen,
+    openEditModal,
     closeEditModal,
     closeEdgeEditModal,
     importFromJson,
