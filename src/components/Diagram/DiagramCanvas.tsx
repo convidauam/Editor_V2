@@ -74,46 +74,42 @@ export const DiagramCanvas: React.FC = () => {
   useEffect(() => {
     const loadDiagram = async () => {
       try {
-  // Intentar cargar el diagrama desde el backend
-	const start_url = process.env.REACT_APP_START_URL;
-	// const start_url = "http://localhost:6543/"; // URL para error y que carge el de respaldo (Mapa del sitio)
-  console.log("start_url", start_url);
-	  if (start_url) {
-	      const response = await fetch(start_url);
-	      if (!response.ok) {
-		  throw new Error(`Error al cargar desde el backend: ${response.statusText}`);
-	      }
-	      const json = await response.json();
-	      if (json.nodes && json.edges) {
-		  setNodes(json.nodes);
-		  setEdges(json.edges);
-		  console.log('Diagrama cargado desde el backend.');
-	      } else {
-		  throw new Error('El JSON recibido del backend no tiene el formato esperado.');
-	      }
-	  }
-      } catch (error) {
-        console.error('Error al cargar el diagrama desde el backend:', error);
-        alert('No se pudo cargar el diagrama desde el backend. Cargando diagrama de respaldo.');
+        // Intentar cargar el diagrama desde el backend si se especifica una URL
+        const start_url = process.env.REACT_APP_START_URL;
 
-        // Cargar el diagrama de respaldo desde public/Diagramas
-        try {
-          const fallbackResponse = await fetch('Diagramas/MapaDeSitioLineasPR.json');
-          if (!fallbackResponse.ok) {
-            throw new Error(`Error al cargar el diagrama de respaldo: ${fallbackResponse.statusText}`);
+        if (start_url) {
+          const response = await fetch(start_url);
+          if (!response.ok) {
+            throw new Error(`Error al cargar desde el backend: ${response.statusText}`);
           }
-          const fallbackJson = await fallbackResponse.json();
-          if (fallbackJson.nodes && fallbackJson.edges) {
-            setNodes(fallbackJson.nodes);
-            setEdges(fallbackJson.edges);
-            console.log('Diagrama cargado desde el archivo de respaldo.');
+          const json = await response.json();
+          if (json.nodes && json.edges) {
+            setNodes(json.nodes);
+            setEdges(json.edges);
+            console.log('Diagrama cargado desde el backend.');
+            return; // Salir si se cargó correctamente
           } else {
-            throw new Error('El JSON de respaldo no tiene el formato esperado.');
+            throw new Error('El JSON recibido del backend no tiene el formato esperado.');
           }
-        } catch (fallbackError) {
-          console.error('Error al cargar el diagrama de respaldo:', fallbackError);
-          alert('No se pudo cargar ningún diagrama.');
         }
+
+        // Si no se especifica una URL, cargar el diagrama predeterminado
+        console.log('No se especificó una URL. Cargando el diagrama predeterminado.');
+        const fallbackResponse = await fetch('/Diagramas/MapaDeSitioLineasPR.json');
+        if (!fallbackResponse.ok) {
+          throw new Error(`Error al cargar el diagrama predeterminado: ${fallbackResponse.statusText}`);
+        }
+        const fallbackJson = await fallbackResponse.json();
+        if (fallbackJson.nodes && fallbackJson.edges) {
+          setNodes(fallbackJson.nodes);
+          setEdges(fallbackJson.edges);
+          console.log('Diagrama predeterminado cargado correctamente.');
+        } else {
+          throw new Error('El JSON predeterminado no tiene el formato esperado.');
+        }
+      } catch (error) {
+        console.error('Error al cargar el diagrama:', error);
+        alert('No se pudo cargar ningún diagrama.');
       }
     };
 
