@@ -68,13 +68,16 @@ export const DiagramCanvas: React.FC = () => {
     toggleEdgeDirection,
     setNodes,
     setEdges,
+    openEditModal,
   } = useDiagram();
 
   useEffect(() => {
     const loadDiagram = async () => {
       try {
-        // Intentar cargar el diagrama desde el backend
+  // Intentar cargar el diagrama desde el backend
 	const start_url = process.env.REACT_APP_START_URL;
+	// const start_url = "http://localhost:6543/"; // URL para error y que carge el de respaldo (Mapa del sitio)
+  console.log("start_url", start_url);
 	  if (start_url) {
 	      const response = await fetch(start_url);
 	      if (!response.ok) {
@@ -95,7 +98,7 @@ export const DiagramCanvas: React.FC = () => {
 
         // Cargar el diagrama de respaldo desde public/Diagramas
         try {
-          const fallbackResponse = await fetch('/Diagramas/DiagramaTutorial.json');
+          const fallbackResponse = await fetch('Diagramas/MapaDeSitioLineasPR.json');
           if (!fallbackResponse.ok) {
             throw new Error(`Error al cargar el diagrama de respaldo: ${fallbackResponse.statusText}`);
           }
@@ -143,6 +146,13 @@ export const DiagramCanvas: React.FC = () => {
     closeContextMenu();
   }, [selectedEdgeForDelete, setEdges, closeContextMenu]);
 
+  // Función para abrir el modal de edición desde el menú contextual
+  const handleEditNodeFromContextMenu = React.useCallback(() => {
+    if (selectedNodeForDelete) {
+      openEditModal(selectedNodeForDelete);
+    }
+  }, [selectedNodeForDelete, openEditModal]);
+
   return (
     <div ref={diagramRef} style={{ width: '100%', height: '100vh', position: 'relative' }}>
       <Toolbar
@@ -154,6 +164,10 @@ export const DiagramCanvas: React.FC = () => {
         <ReactFlow
           nodes={nodes}
           edges={edges}
+          onNodeClick={(event, node) => {
+            console.log('Nodo picado:', node.data);
+            console.log("ID del nodo", node.id);
+          }}
           onNodesChange={onNodesChange}
           onEdgesChange={onEdgesChange}
           onConnect={onConnect}
@@ -193,11 +207,12 @@ export const DiagramCanvas: React.FC = () => {
         onClose={closeContextMenu}
         onCreateNode={createNodeFromContextMenu}
         onDeleteNode={deleteNodeFromContextMenu}
+        onEditNode={handleEditNodeFromContextMenu} // <-- NUEVO
         onDeleteEdge={deleteEdgeFromContextMenu}
-        onToggleEdgeDirection={toggleEdgeDirection} // Pasamos la nueva función
+        onToggleEdgeDirection={toggleEdgeDirection}
         selectedNodeForDelete={selectedNodeForDelete}
         selectedEdgeForDelete={selectedEdgeForDelete}
-        onToggleEdgeType={toggleEdgeType} // Pasar funcion de alternar tipo de línea
+        onToggleEdgeType={toggleEdgeType}
       />
 
       <NodeEditModal

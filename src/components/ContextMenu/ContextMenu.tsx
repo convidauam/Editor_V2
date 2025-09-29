@@ -1,15 +1,16 @@
 import React from 'react';
 import { Menu, MenuItem, ListItemIcon, ListItemText } from '@mui/material';
-import { Add, Delete, SwapHoriz, LineStyle } from '@mui/icons-material';
+import { Add, Delete, SwapHoriz, LineStyle, Edit } from '@mui/icons-material';
 
 interface ContextMenuProps {
   anchorPosition: { x: number; y: number } | null;
   onClose: () => void;
   onCreateNode: () => void;
   onDeleteNode: () => void;
+  onEditNode: () => void; // <-- NUEVO
   onDeleteEdge: () => void;
   onToggleEdgeDirection: () => void;
-  onToggleEdgeType: () => void; // Nueva función para alternar el tipo de línea
+  onToggleEdgeType: () => void;
   selectedNodeForDelete: string | null;
   selectedEdgeForDelete: string | null;
 }
@@ -19,9 +20,10 @@ export const ContextMenu: React.FC<ContextMenuProps> = ({
   onClose,
   onCreateNode,
   onDeleteNode,
+  onEditNode, // <-- NUEVO
   onDeleteEdge,
   onToggleEdgeDirection,
-  onToggleEdgeType, // Nueva prop
+  onToggleEdgeType,
   selectedNodeForDelete,
   selectedEdgeForDelete,
 }) => {
@@ -32,6 +34,11 @@ export const ContextMenu: React.FC<ContextMenuProps> = ({
 
   const handleDeleteNode = () => {
     onDeleteNode();
+    onClose();
+  };
+
+  const handleEditNode = () => {
+    onEditNode();
     onClose();
   };
 
@@ -71,12 +78,20 @@ export const ContextMenu: React.FC<ContextMenuProps> = ({
       )}
       
       {selectedNodeForDelete && (
-        <MenuItem onClick={handleDeleteNode}>
-          <ListItemIcon>
-            <Delete />
-          </ListItemIcon>
-          <ListItemText primary="Eliminar Nodo" />
-        </MenuItem>
+        <>
+          <MenuItem onClick={handleDeleteNode}>
+            <ListItemIcon>
+              <Delete />
+            </ListItemIcon>
+            <ListItemText primary="Eliminar Nodo" />
+          </MenuItem>
+          <MenuItem onClick={handleEditNode}>
+            <ListItemIcon>
+              <Edit />
+            </ListItemIcon>
+            <ListItemText primary="Editar Nodo" />
+          </MenuItem>
+        </>
       )}
 
       {selectedEdgeForDelete && (
