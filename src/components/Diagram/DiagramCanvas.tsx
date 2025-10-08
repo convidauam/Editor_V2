@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'; // Importa useState
+import { useEffect } from 'react';
 import React, { useCallback, useRef } from 'react';
 import ReactFlow, {
   ReactFlowProvider,
@@ -18,7 +18,7 @@ import { CustomEdgeWithLabel } from '../EdgeTypes/CustomEdgeWithLabel';
 import { useTheme } from '@mui/material/styles';
 import { Toolbar } from '../Toolbar/Toolbar';
 import ArrowMarker from '../ArrowMarker/ArrowMarker';
-import CircularProgress from '@mui/material/CircularProgress'; // Importa el componente CircularProgress
+import CircularProgress from '@mui/material/CircularProgress';
 
 const nodeTypes = {
   custom: CustomNode,
@@ -35,9 +35,9 @@ const isValidConnection = (connection: Connection) => {
 };
 
 export const DiagramCanvas: React.FC = () => {
-  const [isLoading, setIsLoading] = useState(true); // Estado para el indicador de carga
   const theme = useTheme();
   const diagramRef = useRef<HTMLDivElement>(null);
+  const [isLoading, setIsLoading] = React.useState(true); // Estado para el indicador de carga
   const {
     nodes,
     edges,
@@ -78,8 +78,8 @@ export const DiagramCanvas: React.FC = () => {
       setIsLoading(true); // Mostrar el indicador de carga
       try {
         // Simular un retraso de 3 segundos
-        // await new Promise((resolve) => setTimeout(resolve, 3000));
-
+        await new Promise((resolve) => setTimeout(resolve, 3000));
+        // Intentar cargar el diagrama desde el backend si se especifica una URL
         const start_url = process.env.REACT_APP_START_URL;
 
         if (start_url) {
@@ -98,8 +98,8 @@ export const DiagramCanvas: React.FC = () => {
           }
         }
 
-        // Si no se especifica una URL, cargar el diagrama predeterminado
-console.log('No se especificó una URL. Cargando el diagrama predeterminado.');
+// Si no se especifica una URL, cargar el diagrama predeterminado
+        console.log('No se especificó una URL. Cargando el diagrama predeterminado.');
         const fallbackResponse = await fetch('/Diagramas/MapaDeSitioLineasPR.json');
         if (!fallbackResponse.ok) {
           throw new Error(`Error al cargar el diagrama predeterminado: ${fallbackResponse.statusText}`);
@@ -162,16 +162,20 @@ console.log('No se especificó una URL. Cargando el diagrama predeterminado.');
         <div
           style={{
             position: 'absolute',
-            top: '50%',
-            left: '50%',
-            transform: 'translate(-50%, -50%)',
+            top: 0,
+            left: 0,
+            width: '100%',
+            height: '100%',
+            backgroundColor: '#d5d5d2', 
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
             zIndex: 1000,
           }}
         >
           <CircularProgress />
         </div>
       )}
-
       {!isLoading && (
         <>
           <Toolbar
@@ -202,7 +206,7 @@ console.log('No se especificó una URL. Cargando el diagrama predeterminado.');
               fitView
               isValidConnection={isValidConnection}
               style={{
-                backgroundColor: '#636362', // puse un color menos feo 
+                backgroundColor: '#636362', // puse un color menos feo
               }}
             >
               <ReactFlowBackground
@@ -220,6 +224,34 @@ console.log('No se especificó una URL. Cargando el diagrama predeterminado.');
               />
             </ReactFlow>
           </ReactFlowProvider>
+
+          <ContextMenu
+            anchorPosition={contextMenu}
+            onClose={closeContextMenu}
+            onCreateNode={createNodeFromContextMenu}
+            onDeleteNode={deleteNodeFromContextMenu}
+            onEditNode={handleEditNodeFromContextMenu}
+            onDeleteEdge={deleteEdgeFromContextMenu}
+            onToggleEdgeDirection={toggleEdgeDirection}
+            selectedNodeForDelete={selectedNodeForDelete}
+            selectedEdgeForDelete={selectedEdgeForDelete}
+            onToggleEdgeType={toggleEdgeType}
+          />
+
+          <NodeEditModal
+            open={isEditModalOpen}
+            onClose={closeEditModal}
+            node={selectedNodeForEdit}
+            onSave={updateNodeData}
+          />
+
+          <EdgeEditModal
+            open={isEdgeEditModalOpen}
+            onClose={closeEdgeEditModal}
+            edge={selectedEdgeForEdit}
+            nodes={nodes}
+            onSave={updateEdgeData}
+          />
         </>
       )}
     </div>
