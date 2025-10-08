@@ -7,8 +7,10 @@ import ReactFlow, {
   MiniMap,
   BackgroundVariant,
   Connection,
+  Node,
 } from 'reactflow';
 import 'reactflow/dist/style.css';
+import { Box } from '@mui/material';
 import { useDiagram } from '../../hooks/useDiagram';
 import { ContextMenu } from '../ContextMenu/ContextMenu';
 import { NodeEditModal } from '../NodeEditModal/NodeEditModal';
@@ -18,7 +20,7 @@ import { CustomEdgeWithLabel } from '../EdgeTypes/CustomEdgeWithLabel';
 import { useTheme } from '@mui/material/styles';
 import { Toolbar } from '../Toolbar/Toolbar';
 import ArrowMarker from '../ArrowMarker/ArrowMarker';
-import CircularProgress from '@mui/material/CircularProgress';
+import NodeContentModal from './NodeContentModal';
 
 const nodeTypes = {
   custom: CustomNode,
@@ -37,14 +39,13 @@ const isValidConnection = (connection: Connection) => {
 export const DiagramCanvas: React.FC = () => {
   const theme = useTheme();
   const diagramRef = useRef<HTMLDivElement>(null);
-  const [isLoading, setIsLoading] = React.useState(true); // Estado para el indicador de carga
   const {
     nodes,
     edges,
     onNodesChange,
     onEdgesChange,
     onConnect, // Usar el onConnect del hook
-    onNodeDoubleClick,
+
     onEdgeDoubleClick,
     onPaneContextMenu,
     onNodeContextMenu,
@@ -71,14 +72,14 @@ export const DiagramCanvas: React.FC = () => {
     setNodes,
     setEdges,
     openEditModal,
+    modalState,
+    handleNodeClick,
+    closeModal,
   } = useDiagram();
 
   useEffect(() => {
     const loadDiagram = async () => {
-      setIsLoading(true); // Mostrar el indicador de carga
       try {
-        // Simular un retraso de 3 segundos
-        await new Promise((resolve) => setTimeout(resolve, 3000));
         // Intentar cargar el diagrama desde el backend si se especifica una URL
         const start_url = process.env.REACT_APP_START_URL;
 
@@ -92,13 +93,13 @@ export const DiagramCanvas: React.FC = () => {
             setNodes(json.nodes);
             setEdges(json.edges);
             console.log('Diagrama cargado desde el backend.');
-            return;
+            return; // Salir si se cargó correctamente
           } else {
             throw new Error('El JSON recibido del backend no tiene el formato esperado.');
           }
         }
 
-// Si no se especifica una URL, cargar el diagrama predeterminado
+        // Si no se especifica una URL, cargar el diagrama predeterminado
         console.log('No se especificó una URL. Cargando el diagrama predeterminado.');
         const fallbackResponse = await fetch('/Diagramas/MapaDeSitioLineasPR.json');
         if (!fallbackResponse.ok) {
@@ -115,8 +116,6 @@ export const DiagramCanvas: React.FC = () => {
       } catch (error) {
         console.error('Error al cargar el diagrama:', error);
         alert('No se pudo cargar ningún diagrama.');
-      } finally {
-        setIsLoading(false); // Ocultar el indicador de carga
       }
     };
 
@@ -156,104 +155,102 @@ export const DiagramCanvas: React.FC = () => {
     }
   }, [selectedNodeForDelete, openEditModal]);
 
+  //funcion creada para saber que nodo fue clickeado, necesaria para el modal
+  const onNodeClick = useCallback(
+    (_event: React.MouseEvent, node: Node) => {
+      handleNodeClick(node);
+    },
+    [handleNodeClick]
+  );
+
   return (
-    <div ref={diagramRef} style={{ width: '100%', height: '100vh', position: 'relative' }}>
-      {isLoading && (
-        <div
-          style={{
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            width: '100%',
-            height: '100%',
-            backgroundColor: '#d5d5d2', 
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            zIndex: 1000,
-          }}
-        >
-          <CircularProgress />
-        </div>
-      )}
-      {!isLoading && (
-        <>
-          <Toolbar
-            reactFlowInstance={reactFlowInstance}
-            diagramRef={diagramRef}
-            onImportJson={importFromJson}
-          />
-          <ReactFlowProvider>
-            <ReactFlow
-              nodes={nodes}
-              edges={edges}
-              onNodeClick={(event, node) => {
-                console.log('Nodo picado:', node.data);
-                console.log("ID del nodo", node.id);
-              }}
-              onNodesChange={onNodesChange}
-              onEdgesChange={onEdgesChange}
-              onConnect={onConnect}
-              onNodeDoubleClick={onNodeDoubleClick}
-              onEdgeDoubleClick={onEdgeDoubleClick}
-              onPaneContextMenu={onPaneContextMenu}
-              onNodeContextMenu={onNodeContextMenu}
-              onEdgeContextMenu={onEdgeContextMenu}
-              onPaneClick={onPaneClick}
-              onInit={setReactFlowInstance}
-              nodeTypes={nodeTypes}
-              edgeTypes={edgeTypes}
-              fitView
-              isValidConnection={isValidConnection}
-              style={{
-                backgroundColor: '#636362', // puse un color menos feo
-              }}
-            >
-              <ReactFlowBackground
-                variant={BackgroundVariant.Dots}
-                gap={20}
-                size={1}
-                color={theme.palette.divider}
-              />
-              <ArrowMarker id="arrowhead" />
-              <Controls />
-              <MiniMap
-                style={{
-                  backgroundColor: theme.palette.background.paper,
-                }}
-              />
-            </ReactFlow>
-          </ReactFlowProvider>
-
-          <ContextMenu
-            anchorPosition={contextMenu}
-            onClose={closeContextMenu}
-            onCreateNode={createNodeFromContextMenu}
-            onDeleteNode={deleteNodeFromContextMenu}
-            onEditNode={handleEditNodeFromContextMenu}
-            onDeleteEdge={deleteEdgeFromContextMenu}
-            onToggleEdgeDirection={toggleEdgeDirection}
-            selectedNodeForDelete={selectedNodeForDelete}
-            selectedEdgeForDelete={selectedEdgeForDelete}
-            onToggleEdgeType={toggleEdgeType}
-          />
-
-          <NodeEditModal
-            open={isEditModalOpen}
-            onClose={closeEditModal}
-            node={selectedNodeForEdit}
-            onSave={updateNodeData}
-          />
-
-          <EdgeEditModal
-            open={isEdgeEditModalOpen}
-            onClose={closeEdgeEditModal}
-            edge={selectedEdgeForEdit}
+      <div ref={diagramRef} style={{ width: '100%', height: '100vh', position: 'relative' }}>
+        <Toolbar
+          reactFlowInstance={reactFlowInstance}
+          diagramRef={diagramRef}
+          onImportJson={importFromJson}
+        />
+        <ReactFlowProvider>
+          <ReactFlow
             nodes={nodes}
-            onSave={updateEdgeData}
-          />
-        </>
-      )}
-    </div>
+            edges={edges}
+            onNodeClick={onNodeClick}
+            /* lineas comentadas eran para debuggear
+            onNodeClick={(event, node) => {
+            console.log('Nodo picado:', node.data);
+            console.log("ID del nodo", node.id);
+            }}*/
+            onNodesChange={onNodesChange}
+            onEdgesChange={onEdgesChange}
+            onConnect={onConnect}
+            onEdgeDoubleClick={onEdgeDoubleClick}
+            onPaneContextMenu={onPaneContextMenu}
+            onNodeContextMenu={onNodeContextMenu}
+            onEdgeContextMenu={onEdgeContextMenu}
+            onPaneClick={onPaneClick}
+            onInit={setReactFlowInstance}
+            nodeTypes={nodeTypes}
+            edgeTypes={edgeTypes}
+            fitView
+            isValidConnection={isValidConnection}
+            style={{
+              backgroundColor: '#636362', // puse un color menos feo 
+            }}
+          >
+            <ReactFlowBackground
+              variant={BackgroundVariant.Dots}
+              gap={20}
+              size={1}
+              color={theme.palette.divider}
+            />
+            <ArrowMarker id="arrowhead" />
+            <Controls />
+            <MiniMap
+              style={{
+                backgroundColor: theme.palette.background.paper,
+              }}
+            />
+          </ReactFlow>
+        </ReactFlowProvider>
+
+        <ContextMenu
+          anchorPosition={contextMenu}
+          onClose={closeContextMenu}
+          onCreateNode={createNodeFromContextMenu}
+          onDeleteNode={deleteNodeFromContextMenu}
+          onEditNode={handleEditNodeFromContextMenu} // <-- NUEVO
+          onDeleteEdge={deleteEdgeFromContextMenu}
+          onToggleEdgeDirection={toggleEdgeDirection}
+          selectedNodeForDelete={selectedNodeForDelete}
+          selectedEdgeForDelete={selectedEdgeForDelete}
+          onToggleEdgeType={toggleEdgeType}
+        />
+
+        <NodeEditModal
+          open={isEditModalOpen}
+          onClose={closeEditModal}
+          node={selectedNodeForEdit}
+          onSave={updateNodeData}
+        />
+
+        <EdgeEditModal
+          open={isEdgeEditModalOpen}
+          onClose={closeEdgeEditModal}
+          edge={selectedEdgeForEdit}
+          nodes={nodes}
+          onSave={updateEdgeData}
+        />
+
+        
+        <NodeContentModal
+          open={modalState.open}
+          onClose={closeModal}
+          url={modalState.url}
+          title={modalState.title}
+        />
+      </div>
+    
   );
 };
+
+
