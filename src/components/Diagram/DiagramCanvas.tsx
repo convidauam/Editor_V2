@@ -19,6 +19,7 @@ import { useTheme } from '@mui/material/styles';
 import { Toolbar } from '../Toolbar/Toolbar';
 import ArrowMarker from '../ArrowMarker/ArrowMarker';
 import CircularProgress from '@mui/material/CircularProgress'; // Importa el componente CircularProgress
+import { NavigationWidget } from './NavigationWidget'; // Importa el widget de navegación
 
 const nodeTypes = {
   custom: CustomNode,
@@ -34,8 +35,34 @@ const isValidConnection = (connection: Connection) => {
   return true;
 };
 
+const hasGraphChanged = async (url: string): Promise<boolean> => {
+  try {
+    const response = await fetch(url, { method: 'HEAD' });
+    if (!response.ok) {
+      throw new Error(`Error al verificar cambios en la gráfica: ${response.statusText}`);
+    }
+
+    // Supongamos que el backend envía un encabezado `Last-Modified`
+    const lastModified = response.headers.get('Last-Modified');
+    if (lastModified) {
+      console.log(`Última modificación: ${lastModified}`);
+      // Aquí puedes implementar lógica adicional para comparar fechas si es necesario
+    }
+
+    // Retorna `true` si detectas que la gráfica ha cambiado
+    return false; // Cambia esto según la lógica de tu backend
+  } catch (error) {
+    console.error('Error al verificar cambios en la gráfica:', error);
+    return false;
+  }
+};
+
 export const DiagramCanvas: React.FC = () => {
-  const [isLoading, setIsLoading] = useState(true); // Estado para el indicador de carga
+  const [isLoading, setIsLoading] = useState(true);
+  const [graphHistory, setGraphHistory] = useState<{ nodes: any[]; edges: any[]; url?: string }[]>([]);
+  const [currentGraphIndex, setCurrentGraphIndex] = useState(-1);
+  const [maxHistorySize, setMaxHistorySize] = useState(10);
+
   const theme = useTheme();
   const diagramRef = useRef<HTMLDivElement>(null);
   const {
@@ -66,62 +93,130 @@ export const DiagramCanvas: React.FC = () => {
     isEdgeEditModalOpen,
     closeEditModal,
     closeEdgeEditModal,
-    importFromJson,    
+    importFromJson,
     toggleEdgeDirection,
     setNodes,
     setEdges,
     openEditModal,
   } = useDiagram();
 
-  useEffect(() => {
-    const loadDiagram = async () => {
-      setIsLoading(true); // Mostrar el indicador de carga
-      try {
-        // Simular un retraso de 3 segundos
-        // await new Promise((resolve) => setTimeout(resolve, 3000));
+  const loadDiagram = async (url?: string) => {
+    setIsLoading(true);
+    try {
+      if (url && (await hasGraphChanged(url))) {
+        alert('La gráfica ha cambiado en el backend. Recargando...');
+      }
 
-        const start_url = process.env.REACT_APP_START_URL;
+      // El resto de la lógica de carga permanece igual
+      let nodes: any[] = [];
+      let edges: any[] = [];
 
-        if (start_url) {
-          const response = await fetch(start_url);
-          if (!response.ok) {
-            throw new Error(`Error al cargar desde el backend: ${response.statusText}`);
-          }
-          const json = await response.json();
-          if (json.nodes && json.edges) {
-            setNodes(json.nodes);
-            setEdges(json.edges);
-            console.log('Diagrama cargado desde el backend.');
-            return;
-          } else {
-            throw new Error('El JSON recibido del backend no tiene el formato esperado.');
-          }
+      if (url) {
+        const response = await fetch(url);
+        if (!response.ok) {
+          throw new Error(`Error al cargar desde el backend: ${response.statusText}`);
         }
-
-        // Si no se especifica una URL, cargar el diagrama predeterminado
-console.log('No se especificó una URL. Cargando el diagrama predeterminado.');
+        const json = await response.json();
+        if (json.nodes && json.edges) {
+          nodes = json.nodes;
+          edges = json.edges;
+        } else {
+          throw new Error('El JSON recibido del backend no tiene el formato esperado.');
+        }
+      } else {
         const fallbackResponse = await fetch('/Diagramas/MapaDeSitioLineasPR.json');
         if (!fallbackResponse.ok) {
           throw new Error(`Error al cargar el diagrama predeterminado: ${fallbackResponse.statusText}`);
         }
         const fallbackJson = await fallbackResponse.json();
         if (fallbackJson.nodes && fallbackJson.edges) {
-          setNodes(fallbackJson.nodes);
-          setEdges(fallbackJson.edges);
-          console.log('Diagrama predeterminado cargado correctamente.');
+          nodes = fallbackJson.nodes;
+          edges = fallbackJson.edges;
         } else {
           throw new Error('El JSON predeterminado no tiene el formato esperado.');
         }
-      } catch (error) {
-        console.error('Error al cargar el diagrama:', error);
-        alert('No se pudo cargar ningún diagrama.');
-      } finally {
-        setIsLoading(false); // Ocultar el indicador de carga
+      }
+
+// Actualizar el historial de gráficas
+      const newGraph = { nodes, edges, url };
+      const updatedHistory = [...graphHistory.slice(0, currentGraphIndex + 1), newGraph];
+      if (updatedHistory.length > maxHistorySize) {
+        updatedHistory.shift(); // Eliminar la gráfica más antigua si se excede el tamaño máximo
+      }
+      setGraphHistory(updatedHistory);
+      setCurrentGraphIndex(updatedHistory.length - 1);
+
+// Actualizar el historial del navegador
+      window.history.pushState({ index: updatedHistory.length - 1 }, '', '');
+
+      setNodes(nodes);
+      setEdges(edges);
+    } catch (error) {
+      console.error('Error al cargar el diagrama:', error);
+      alert('No se pudo cargar ningún diagrama.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const goBack = async () => {
+    if (currentGraphIndex > 0) {
+      const prevIndex = currentGraphIndex - 1;
+      const { nodes, edges, url } = graphHistory[prevIndex];
+
+      if (nodes && edges) {
+        // Si los nodos y bordes están en memoria, simplemente actualízalos
+        setNodes(nodes);
+        setEdges(edges);
+      } else if (url) {
+        // Si no están en memoria, recarga desde la URL
+        await loadDiagram(url);
+      }
+
+      setCurrentGraphIndex(prevIndex);
+      window.history.pushState({ index: prevIndex }, '', '');
+    }
+  };
+
+  const goForward = async () => {
+    if (currentGraphIndex < graphHistory.length - 1) {
+      const nextIndex = currentGraphIndex + 1;
+      const { nodes, edges, url } = graphHistory[nextIndex];
+
+      if (nodes && edges) {
+        // Si los nodos y bordes están en memoria, simplemente actualízalos
+        setNodes(nodes);
+        setEdges(edges);
+      } else if (url) {
+        // Si no están en memoria, recarga desde la URL
+        await loadDiagram(url);
+      }
+
+      setCurrentGraphIndex(nextIndex);
+      window.history.pushState({ index: nextIndex }, '', '');
+    }
+  };
+
+  useEffect(() => {
+    loadDiagram();
+  }, []);
+
+  useEffect(() => {
+    const handlePopState = (event: PopStateEvent) => {
+      const index = event.state?.index ?? -1;
+      if (index >= 0 && index < graphHistory.length) {
+        const { nodes, edges } = graphHistory[index];
+        setNodes(nodes);
+        setEdges(edges);
+        setCurrentGraphIndex(index);
       }
     };
 
-    loadDiagram();
-  }, [setNodes, setEdges]);
+    window.addEventListener('popstate', handlePopState);
+    return () => {
+      window.removeEventListener('popstate', handlePopState);
+    };
+  }, [graphHistory]);
 
   const onPaneClick = useCallback(() => {
     closeContextMenu();
@@ -156,6 +251,12 @@ console.log('No se especificó una URL. Cargando el diagrama predeterminado.');
     }
   }, [selectedNodeForDelete, openEditModal]);
 
+  // Función para crear un nuevo canvas
+  const createNewCanvas = () => {
+    setNodes([]); // Limpia los nodos
+    setEdges([]); // Limpia las conexiones
+  };
+
   return (
     <div ref={diagramRef} style={{ width: '100%', height: '100vh', position: 'relative' }}>
       {isLoading && (
@@ -178,6 +279,7 @@ console.log('No se especificó una URL. Cargando el diagrama predeterminado.');
             reactFlowInstance={reactFlowInstance}
             diagramRef={diagramRef}
             onImportJson={importFromJson}
+            onCreateNewCanvas={createNewCanvas} // Pasar la función al Toolbar
           />
           <ReactFlowProvider>
             <ReactFlow
@@ -220,6 +322,17 @@ console.log('No se especificó una URL. Cargando el diagrama predeterminado.');
               />
             </ReactFlow>
           </ReactFlowProvider>
+          <NavigationWidget
+            onBack={goBack}
+            onForward={goForward}
+            canGoBack={currentGraphIndex > 0}
+            canGoForward={currentGraphIndex < graphHistory.length - 1}
+          />
+          <input
+            type="number"
+            value={maxHistorySize}
+            onChange={(e) => setMaxHistorySize(Number(e.target.value))}
+          />
         </>
       )}
     </div>

@@ -8,9 +8,10 @@ interface ToolbarProps {
   reactFlowInstance: ReactFlowInstance | null;
   diagramRef: React.RefObject<HTMLDivElement>;
   onImportJson: (file: File) => void; // Nueva prop para importar JSON
+  onCreateNewCanvas: () => void; // Nueva función para crear un nuevo canvas
 }
 
-export const Toolbar: React.FC<ToolbarProps> = ({ reactFlowInstance, diagramRef, onImportJson }) => {
+export const Toolbar: React.FC<ToolbarProps> = ({ reactFlowInstance, diagramRef, onImportJson, onCreateNewCanvas }) => {
   const handleExportJson = () => {
     exportToJson(reactFlowInstance);
   };
@@ -86,6 +87,14 @@ export const Toolbar: React.FC<ToolbarProps> = ({ reactFlowInstance, diagramRef,
           hidden
           onChange={handleImportJson}
         />
+      </Button>
+      <Button
+        variant="contained"
+        color="success"
+        onClick={onCreateNewCanvas}
+        size="small"
+      >
+        Nuevo Canvas
       </Button>
     </Stack>
   );
