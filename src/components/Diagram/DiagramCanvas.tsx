@@ -10,7 +10,6 @@ import ReactFlow, {
   Node,
 } from 'reactflow';
 import 'reactflow/dist/style.css';
-import { Box } from '@mui/material';
 import { useDiagram } from '../../hooks/useDiagram';
 import { ContextMenu } from '../ContextMenu/ContextMenu';
 import { NodeEditModal } from '../NodeEditModal/NodeEditModal';
@@ -39,6 +38,7 @@ const isValidConnection = (connection: Connection) => {
 export const DiagramCanvas: React.FC = () => {
   const theme = useTheme();
   const diagramRef = useRef<HTMLDivElement>(null);
+  const [isLoading, setIsLoading] = React.useState(true); // Estado para el indicador de carga
   const {
     nodes,
     edges,
