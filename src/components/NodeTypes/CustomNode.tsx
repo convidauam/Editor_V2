@@ -5,6 +5,7 @@ import { getThemeColor } from '../../utils/themeColors';
 
 export const CustomNode: React.FC<NodeProps> = ({ data, selected }) => {
   const themeColor = data.themeColor ? getThemeColor(data.themeColor) : '#1976d2';
+  const hasUrl = Boolean(data.url);
 
   return (
     <Box
@@ -21,6 +22,11 @@ export const CustomNode: React.FC<NodeProps> = ({ data, selected }) => {
         justifyContent: 'space-between',
         padding: '8px',
         gap: '8px',
+        cursor: hasUrl ? 'pointer' : 'default', //solo se mostrara si el nodo tiene URL
+        '&:hover': hasUrl ? {
+          boxShadow: 3,
+          borderColor: '#1976d2',
+        } : {},
       }}
     >
       {/* Línea de tema en la parte superior */}
