@@ -56,6 +56,17 @@ export function useDiagram() {
   const [selectedNodeForDelete, setSelectedNodeForDelete] = useState<string | null>(null);
   const [selectedEdgeForDelete, setSelectedEdgeForDelete] = useState<string | null>(null);
 
+  // Estado para el modal de contenido de nodo
+  const [modalState, setModalState] = useState<{
+    open: boolean;
+    url: string;
+    title: string;
+  }>({
+    open: false,
+    url: '',
+    title: '',
+  });
+
   const onConnect = useCallback(
     (connection: Connection) => {
       setEdges((prevEdges) => [
@@ -77,15 +88,6 @@ export function useDiagram() {
     },
     [setEdges]
   );
-
-  const onNodeDoubleClick = useCallback((event: React.MouseEvent, node: Node) => {
-    event.preventDefault();
-    // Si el nodo tiene una URL, ábrela en una nueva pestaña
-    if (node.data && node.data.url) {
-      window.open(node.data.url, '_blank');
-    }
-    // Si no tiene URL, no hagas nada (no abras el modal)
-  }, []);
 
   const onEdgeDoubleClick = useCallback((event: React.MouseEvent, edge: Edge) => {
     setSelectedEdgeForEdit(edge);
@@ -259,7 +261,24 @@ export function useDiagram() {
     };
     reader.readAsText(file);
   };
-  
+  // Función para manejar el clic en un nodo
+  const handleNodeClick = useCallback((node: Node) => {
+    if (node.data?.url) {
+      setModalState({
+        open: true,
+        url: node.data.url,
+        title: node.data.label || 'Contenido del nodo',
+      });
+    }
+  }, []);
+// Función para cerrar el modal de contenido del nodo
+  const closeModal = useCallback(() => {
+    setModalState({
+      open: false,
+      url: '',
+      title: '',
+    });
+  }, []);
 
   return {
     nodes,
@@ -269,7 +288,7 @@ export function useDiagram() {
     onNodesChange,
     onEdgesChange,
     onConnect,
-    onNodeDoubleClick,
+    
     onEdgeDoubleClick,
     onPaneContextMenu,
     onNodeContextMenu,
@@ -298,6 +317,9 @@ export function useDiagram() {
     closeEditModal,
     closeEdgeEditModal,
     importFromJson,
+    modalState,
+    handleNodeClick,
+    closeModal,
   };
 };
 

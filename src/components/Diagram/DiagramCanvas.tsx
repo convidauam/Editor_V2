@@ -7,6 +7,7 @@ import ReactFlow, {
   MiniMap,
   BackgroundVariant,
   Connection,
+  Node,
 } from 'reactflow';
 import 'reactflow/dist/style.css';
 import { useDiagram } from '../../hooks/useDiagram';
@@ -18,6 +19,7 @@ import { CustomEdgeWithLabel } from '../EdgeTypes/CustomEdgeWithLabel';
 import { useTheme } from '@mui/material/styles';
 import { Toolbar } from '../Toolbar/Toolbar';
 import ArrowMarker from '../ArrowMarker/ArrowMarker';
+import NodeContentModal from './NodeContentModal';
 
 const nodeTypes = {
   custom: CustomNode,
@@ -36,13 +38,14 @@ const isValidConnection = (connection: Connection) => {
 export const DiagramCanvas: React.FC = () => {
   const theme = useTheme();
   const diagramRef = useRef<HTMLDivElement>(null);
+  const [isLoading, setIsLoading] = React.useState(true); // Estado para el indicador de carga
   const {
     nodes,
     edges,
     onNodesChange,
     onEdgesChange,
     onConnect, // Usar el onConnect del hook
-    onNodeDoubleClick,
+
     onEdgeDoubleClick,
     onPaneContextMenu,
     onNodeContextMenu,
@@ -69,6 +72,9 @@ export const DiagramCanvas: React.FC = () => {
     setNodes,
     setEdges,
     openEditModal,
+    modalState,
+    handleNodeClick,
+    closeModal,
   } = useDiagram();
 
   useEffect(() => {
@@ -149,82 +155,102 @@ export const DiagramCanvas: React.FC = () => {
     }
   }, [selectedNodeForDelete, openEditModal]);
 
+  //funcion creada para saber que nodo fue clickeado, necesaria para el modal
+  const onNodeClick = useCallback(
+    (_event: React.MouseEvent, node: Node) => {
+      handleNodeClick(node);
+    },
+    [handleNodeClick]
+  );
+
   return (
-    <div ref={diagramRef} style={{ width: '100%', height: '100vh', position: 'relative' }}>
-      <Toolbar
-        reactFlowInstance={reactFlowInstance}
-        diagramRef={diagramRef}
-        onImportJson={importFromJson}
-      />
-      <ReactFlowProvider>
-        <ReactFlow
-          nodes={nodes}
-          edges={edges}
-          onNodeClick={(event, node) => {
+      <div ref={diagramRef} style={{ width: '100%', height: '100vh', position: 'relative' }}>
+        <Toolbar
+          reactFlowInstance={reactFlowInstance}
+          diagramRef={diagramRef}
+          onImportJson={importFromJson}
+        />
+        <ReactFlowProvider>
+          <ReactFlow
+            nodes={nodes}
+            edges={edges}
+            onNodeClick={onNodeClick}
+            /* lineas comentadas eran para debuggear
+            onNodeClick={(event, node) => {
             console.log('Nodo picado:', node.data);
             console.log("ID del nodo", node.id);
-          }}
-          onNodesChange={onNodesChange}
-          onEdgesChange={onEdgesChange}
-          onConnect={onConnect}
-          onNodeDoubleClick={onNodeDoubleClick}
-          onEdgeDoubleClick={onEdgeDoubleClick}
-          onPaneContextMenu={onPaneContextMenu}
-          onNodeContextMenu={onNodeContextMenu}
-          onEdgeContextMenu={onEdgeContextMenu}
-          onPaneClick={onPaneClick}
-          onInit={setReactFlowInstance}
-          nodeTypes={nodeTypes}
-          edgeTypes={edgeTypes}
-          fitView
-          isValidConnection={isValidConnection}
-          style={{
-            backgroundColor: '#636362', // puse un color menos feo 
-          }}
-        >
-          <ReactFlowBackground
-            variant={BackgroundVariant.Dots}
-            gap={20}
-            size={1}
-            color={theme.palette.divider}
-          />
-          <ArrowMarker id="arrowhead" />
-          <Controls />
-          <MiniMap
+            }}*/
+            onNodesChange={onNodesChange}
+            onEdgesChange={onEdgesChange}
+            onConnect={onConnect}
+            onEdgeDoubleClick={onEdgeDoubleClick}
+            onPaneContextMenu={onPaneContextMenu}
+            onNodeContextMenu={onNodeContextMenu}
+            onEdgeContextMenu={onEdgeContextMenu}
+            onPaneClick={onPaneClick}
+            onInit={setReactFlowInstance}
+            nodeTypes={nodeTypes}
+            edgeTypes={edgeTypes}
+            fitView
+            isValidConnection={isValidConnection}
             style={{
-              backgroundColor: theme.palette.background.paper,
+              backgroundColor: '#636362', // puse un color menos feo 
             }}
-          />
-        </ReactFlow>
-      </ReactFlowProvider>
+          >
+            <ReactFlowBackground
+              variant={BackgroundVariant.Dots}
+              gap={20}
+              size={1}
+              color={theme.palette.divider}
+            />
+            <ArrowMarker id="arrowhead" />
+            <Controls />
+            <MiniMap
+              style={{
+                backgroundColor: theme.palette.background.paper,
+              }}
+            />
+          </ReactFlow>
+        </ReactFlowProvider>
 
-      <ContextMenu
-        anchorPosition={contextMenu}
-        onClose={closeContextMenu}
-        onCreateNode={createNodeFromContextMenu}
-        onDeleteNode={deleteNodeFromContextMenu}
-        onEditNode={handleEditNodeFromContextMenu} // <-- NUEVO
-        onDeleteEdge={deleteEdgeFromContextMenu}
-        onToggleEdgeDirection={toggleEdgeDirection}
-        selectedNodeForDelete={selectedNodeForDelete}
-        selectedEdgeForDelete={selectedEdgeForDelete}
-        onToggleEdgeType={toggleEdgeType}
-      />
+        <ContextMenu
+          anchorPosition={contextMenu}
+          onClose={closeContextMenu}
+          onCreateNode={createNodeFromContextMenu}
+          onDeleteNode={deleteNodeFromContextMenu}
+          onEditNode={handleEditNodeFromContextMenu} // <-- NUEVO
+          onDeleteEdge={deleteEdgeFromContextMenu}
+          onToggleEdgeDirection={toggleEdgeDirection}
+          selectedNodeForDelete={selectedNodeForDelete}
+          selectedEdgeForDelete={selectedEdgeForDelete}
+          onToggleEdgeType={toggleEdgeType}
+        />
 
-      <NodeEditModal
-        open={isEditModalOpen}
-        onClose={closeEditModal}
-        node={selectedNodeForEdit}
-        onSave={updateNodeData}
-      />
+        <NodeEditModal
+          open={isEditModalOpen}
+          onClose={closeEditModal}
+          node={selectedNodeForEdit}
+          onSave={updateNodeData}
+        />
 
-      <EdgeEditModal
-        open={isEdgeEditModalOpen}
-        onClose={closeEdgeEditModal}
-        edge={selectedEdgeForEdit}
-        nodes={nodes}
-        onSave={updateEdgeData}
-      />
-    </div>
+        <EdgeEditModal
+          open={isEdgeEditModalOpen}
+          onClose={closeEdgeEditModal}
+          edge={selectedEdgeForEdit}
+          nodes={nodes}
+          onSave={updateEdgeData}
+        />
+
+        
+        <NodeContentModal
+          open={modalState.open}
+          onClose={closeModal}
+          url={modalState.url}
+          title={modalState.title}
+        />
+      </div>
+    
   );
 };
+
+
