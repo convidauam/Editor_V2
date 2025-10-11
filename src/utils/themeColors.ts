@@ -21,11 +21,11 @@ export const THEME_COLORS = {
   default: '#1976d2',
 };
 
+export const THEME_COLOR_NAMES = Object.keys(THEME_COLORS) as Array<keyof typeof THEME_COLORS>;
+
 export const getThemeColor = (colorName: keyof typeof THEME_COLORS): string => {
   return THEME_COLORS[colorName] || THEME_COLORS.default;
 };
-
-export const THEME_COLOR_NAMES = Object.keys(THEME_COLORS) as Array<keyof typeof THEME_COLORS>;
 
 export const createGradient = (colors: string[]): string => {
   if (colors.length === 0) return THEME_COLORS.default;
@@ -39,20 +39,15 @@ export const createGradient = (colors: string[]): string => {
   return `linear-gradient(90deg, ${uniqueColors[0]} 0%, ${uniqueColors[1]} 100%)`;
 };
 
-export const getNodeThemeColor = (nodeId: string, nodes: any[] | undefined): string => {
-  if (!nodes || !Array.isArray(nodes)) {
-    console.error('Error: nodes is undefined or not an array');
-    return THEME_COLORS.default;
-  }
-
-  const node = nodes.find((n) => n.id === nodeId);
+export const getNodeThemeColor = (nodeId: string, nodes: any[]): string => {
+  const node = nodes.find(n => n.id === nodeId);
   return node?.data?.themeColor ? getThemeColor(node.data.themeColor) : THEME_COLORS.default;
 };
 
 export const getEdgeLabelBackgroundColor = (sourceId: string, targetId: string, nodes: any[]): string => {
   const sourceColor = getNodeThemeColor(sourceId, nodes);
   const targetColor = getNodeThemeColor(targetId, nodes);
-
+  
   // Siempre usar los colores en el orden: source -> target
-  return `linear-gradient(90deg, ${sourceColor} 0%, ${targetColor} 100%)`;
-};
+  return createGradient([sourceColor, targetColor]);
+}; 

@@ -25,10 +25,10 @@ export const CustomEdgeWithLabel: React.FC<EdgeProps> = ({
 
   const markerId = `arrowhead-${id}`;
   const isReversed = data?.isReversed; // Determina si la flecha está invertida
-  const hasArrow = data?.hasArrow ?? false; // Por defecto, las conexiones no tienen flecha
 
-  // Calcular el degradado para la caja del texto
-  const backgroundGradient = getEdgeLabelBackgroundColor(data?.source, data?.target, data?.nodes);
+  // Calcular la posición del marcador para apuntar al centro del nodo objetivo
+  const refX = isReversed ? 0 : 10; // Ajustar la posición horizontal del marcador
+  const refY = 3.5; // Centrar verticalmente el marcador
 
   return (
     <>
@@ -39,8 +39,8 @@ export const CustomEdgeWithLabel: React.FC<EdgeProps> = ({
         stroke="black"
         strokeWidth={2}
         style={style}
-        markerEnd={hasArrow && !isReversed ? `url(#${markerId})` : undefined} // Flecha al final si no está invertida
-        markerStart={hasArrow && isReversed ? `url(#${markerId})` : undefined} // Flecha al inicio si está invertida
+        markerEnd={isReversed ? undefined : `url(#${markerId})`} // Flecha en el target
+        markerStart={isReversed ? `url(#${markerId})` : undefined} // Flecha en el source si está invertida
       />
       <svg>
         <defs>
@@ -48,8 +48,8 @@ export const CustomEdgeWithLabel: React.FC<EdgeProps> = ({
             id={markerId}
             markerWidth="10"
             markerHeight="7"
-            refX={isReversed ? 0 : 10} // Cambiar la posición según la orientación
-            refY="3.5" // Centrar el marcador verticalmente
+            refX={refX} // Ajustamos la posición horizontal
+            refY={refY} // Ajustamos la posición vertical
             orient="auto"
           >
             <polygon points="0 0, 10 3.5, 0 7" fill="black" />
@@ -68,7 +68,7 @@ export const CustomEdgeWithLabel: React.FC<EdgeProps> = ({
               fontWeight: 700,
               fontFamily: 'system-ui, -apple-system, sans-serif',
               color: '#fff',
-              background: backgroundGradient, // Aplicar el degradado
+              background: getEdgeLabelBackgroundColor(data?.source, data?.target, []),
               padding: '4px 12px',
               borderRadius: '6px',
               border: '1px solid rgba(255,255,255,0.2)',
