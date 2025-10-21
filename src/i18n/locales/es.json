@@ -1,0 +1,18 @@
+{
+  "nodeView": {
+    "loading": "Cargando...",
+    "error": "Error",
+    "retry": "Reintentar",
+    "backToHome": "Volver al inicio",
+    "nodeNotFound": "Nodo no encontrado",
+    "relatedNodes": "Nodos Relacionados",
+    "connections": "Conexiones",
+    "noTitle": "Sin título",
+    "from": "De",
+    "to": "Hacia",
+    "back": "Volver",
+    "home": "Inicio",
+    "id": "ID",
+    "translating": "Traduciendo"
+  }
+}
