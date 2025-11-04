@@ -8,6 +8,7 @@ import ReactFlow, {
   BackgroundVariant,
   Connection,
   Node,
+  Edge,
 } from 'reactflow';
 import 'reactflow/dist/style.css';
 import { useDiagram } from '../../hooks/useDiagram';
@@ -39,6 +40,9 @@ export const DiagramCanvas: React.FC = () => {
   const theme = useTheme();
   const diagramRef = useRef<HTMLDivElement>(null);
   const [isLoading, setIsLoading] = React.useState(true); // Estado para el indicador de carga
+  const [history, setHistory] = React.useState<{ nodes: Node[]; edges: Edge[]; url?: string }[]>([]);
+  const [currentHistoryIndex, setCurrentHistoryIndex] = React.useState<number>(0); // Índice actual del historial
+  const historyLimit = 3; // Número máximo de entradas en el historial
   const {
     nodes,
     edges,
@@ -77,10 +81,87 @@ export const DiagramCanvas: React.FC = () => {
     closeModal,
   } = useDiagram();
 
+  const addToHistory = (newEntry: { nodes: Node[]; edges: Edge[]; url?: string }) => {
+    setHistory((prevHistory) => {
+      const updatedHistory = [...prevHistory, newEntry];
+      if (updatedHistory.length > historyLimit) {
+        updatedHistory.shift();
+      }
+
+      const state = { index: updatedHistory.length - 1 };
+      const url = `/editor?diagram=${state.index}`;
+      window.history.pushState(state, '', url);
+
+      setCurrentHistoryIndex(updatedHistory.length - 1); // Actualiza el índice actual
+
+      return updatedHistory;
+    });
+  };
+
+  const loadFromHistory = async (index: number) => {
+    const entry = history[index];
+    if (entry) {
+      if (entry.url) {
+        try {
+// Consultar al backend para verificar si la gráfica ha cambiado
+
+          const response = await fetch(entry.url);
+          if (!response.ok) {
+            throw new Error(`Error al consultar la URL: ${response.statusText}`);
+          }
+          const json = await response.json();
+          if (
+            JSON.stringify(json.nodes) !== JSON.stringify(entry.nodes) ||
+            JSON.stringify(json.edges) !== JSON.stringify(entry.edges)
+          ) {
+            setNodes(json.nodes);
+            setEdges(json.edges);
+            console.log('La gráfica ha cambiado. Se ha actualizado desde el backend.');
+          } else {
+// Si no ha cambiado, usar los datos almacenados en el historial
+            setNodes(entry.nodes);
+            setEdges(entry.edges);
+          }
+        } catch (error) {
+          console.error('Error al cargar la gráfica desde la URL:', error);
+          setNodes(entry.nodes);
+          setEdges(entry.edges);
+        }
+      } else {
+        setNodes(entry.nodes);
+        setEdges(entry.edges);
+console.log(`Cargando gráfica desde el historial: ${entry.url || 'Sin URL'}`);
+      }
+
+      // Solo actualiza el historial del navegador si no estás navegando dentro del historial existente
+      if (index !== currentHistoryIndex) {
+        const state = { index };
+        const url = `/editor?diagram=${index}`;
+        window.history.pushState(state, '', url);
+      }
+    }
+  };
+
+  const goBack = () => {
+    if (currentHistoryIndex > 0) {
+      const newIndex = currentHistoryIndex - 1;
+      setCurrentHistoryIndex(newIndex);
+      loadFromHistory(newIndex);
+    }
+  };
+
+  const goForward = () => {
+    if (currentHistoryIndex < history.length - 1) {
+      const newIndex = currentHistoryIndex + 1;
+      setCurrentHistoryIndex(newIndex);
+      loadFromHistory(newIndex);
+    }
+  };
+
   useEffect(() => {
     const loadDiagram = async () => {
       try {
-        // Intentar cargar el diagrama desde el backend si se especifica una URL
+// Intentar cargar el diagrama desde el backend si se especifica una URL
         const start_url = process.env.REACT_APP_START_URL;
 
         if (start_url) {
@@ -92,6 +173,7 @@ export const DiagramCanvas: React.FC = () => {
           if (json.nodes && json.edges) {
             setNodes(json.nodes);
             setEdges(json.edges);
+            addToHistory({ nodes: json.nodes, edges: json.edges, url: start_url }); // Agregar al historial
             console.log('Diagrama cargado desde el backend.');
             return; // Salir si se cargó correctamente
           } else {
@@ -99,7 +181,7 @@ export const DiagramCanvas: React.FC = () => {
           }
         }
 
-        // Si no se especifica una URL, cargar el diagrama predeterminado
+// Si no se especifica una URL, cargar el diagrama predeterminado
         console.log('No se especificó una URL. Cargando el diagrama predeterminado.');
         const fallbackResponse = await fetch('/Diagramas/MapaDeSitioLineasPR.json');
         if (!fallbackResponse.ok) {
@@ -109,6 +191,7 @@ export const DiagramCanvas: React.FC = () => {
         if (fallbackJson.nodes && fallbackJson.edges) {
           setNodes(fallbackJson.nodes);
           setEdges(fallbackJson.edges);
+          addToHistory({ nodes: fallbackJson.nodes, edges: fallbackJson.edges, url: '/Diagramas/MapaDeSitioLineasPR.json' }); // Agregar al historial
           console.log('Diagrama predeterminado cargado correctamente.');
         } else {
           throw new Error('El JSON predeterminado no tiene el formato esperado.');
@@ -121,6 +204,24 @@ export const DiagramCanvas: React.FC = () => {
 
     loadDiagram();
   }, [setNodes, setEdges]);
+
+  useEffect(() => {
+    const handlePopState = (event: PopStateEvent) => {
+      const state = event.state;
+      if (state && typeof state.index === 'number') {
+        setCurrentHistoryIndex(state.index); // Actualiza el índice actual
+        loadFromHistory(state.index);
+      } else {
+        window.location.href = '/'; // Redirige a la página principal si no hay estado
+      }
+    };
+
+    window.onpopstate = handlePopState;
+
+    return () => {
+      window.onpopstate = null; // Limpia el evento al desmontar el componente
+    };
+  }, [loadFromHistory]);
 
   const onPaneClick = useCallback(() => {
     closeContextMenu();
@@ -164,92 +265,112 @@ export const DiagramCanvas: React.FC = () => {
   );
 
   return (
-      <div ref={diagramRef} style={{ width: '100%', height: '100vh', position: 'relative' }}>
-        <Toolbar
-          reactFlowInstance={reactFlowInstance}
-          diagramRef={diagramRef}
-          onImportJson={importFromJson}
-        />
-        <ReactFlowProvider>
-          <ReactFlow
-            nodes={nodes}
-            edges={edges}
-            onNodeClick={onNodeClick}
-            /* lineas comentadas eran para debuggear
-            onNodeClick={(event, node) => {
-            console.log('Nodo picado:', node.data);
-            console.log("ID del nodo", node.id);
-            }}*/
-            onNodesChange={onNodesChange}
-            onEdgesChange={onEdgesChange}
-            onConnect={onConnect}
-            onEdgeDoubleClick={onEdgeDoubleClick}
-            onPaneContextMenu={onPaneContextMenu}
-            onNodeContextMenu={onNodeContextMenu}
-            onEdgeContextMenu={onEdgeContextMenu}
-            onPaneClick={onPaneClick}
-            onInit={setReactFlowInstance}
-            nodeTypes={nodeTypes}
-            edgeTypes={edgeTypes}
-            fitView
-            isValidConnection={isValidConnection}
-            style={{
-              backgroundColor: '#636362', // puse un color menos feo 
-            }}
-          >
-            <ReactFlowBackground
-              variant={BackgroundVariant.Dots}
-              gap={20}
-              size={1}
-              color={theme.palette.divider}
-            />
-            <ArrowMarker id="arrowhead" />
-            <Controls />
-            <MiniMap
-              style={{
-                backgroundColor: theme.palette.background.paper,
-              }}
-            />
-          </ReactFlow>
-        </ReactFlowProvider>
-
-        <ContextMenu
-          anchorPosition={contextMenu}
-          onClose={closeContextMenu}
-          onCreateNode={createNodeFromContextMenu}
-          onDeleteNode={deleteNodeFromContextMenu}
-          onEditNode={handleEditNodeFromContextMenu} // <-- NUEVO
-          onDeleteEdge={deleteEdgeFromContextMenu}
-          onToggleEdgeDirection={toggleEdgeDirection}
-          selectedNodeForDelete={selectedNodeForDelete}
-          selectedEdgeForDelete={selectedEdgeForDelete}
-          onToggleEdgeType={toggleEdgeType}
-        />
-
-        <NodeEditModal
-          open={isEditModalOpen}
-          onClose={closeEditModal}
-          node={selectedNodeForEdit}
-          onSave={updateNodeData}
-        />
-
-        <EdgeEditModal
-          open={isEdgeEditModalOpen}
-          onClose={closeEdgeEditModal}
-          edge={selectedEdgeForEdit}
+    <div ref={diagramRef} style={{ width: '100%', height: '100vh', position: 'relative' }}>
+      <Toolbar
+        reactFlowInstance={reactFlowInstance}
+        diagramRef={diagramRef}
+        onImportJson={importFromJson}
+      />
+      <ReactFlowProvider>
+        <ReactFlow
           nodes={nodes}
-          onSave={updateEdgeData}
-        />
+          edges={edges}
+          onNodeClick={onNodeClick}
+          onNodesChange={onNodesChange}
+          onEdgesChange={onEdgesChange}
+          onConnect={onConnect}
+          onEdgeDoubleClick={onEdgeDoubleClick}
+          onPaneContextMenu={onPaneContextMenu}
+          onNodeContextMenu={onNodeContextMenu}
+          onEdgeContextMenu={onEdgeContextMenu}
+          onPaneClick={onPaneClick}
+          onInit={setReactFlowInstance}
+          nodeTypes={nodeTypes}
+          edgeTypes={edgeTypes}
+          fitView
+          isValidConnection={isValidConnection}
+          style={{
+            backgroundColor: '#636362',
+          }}
+        >
+          <ReactFlowBackground
+            variant={BackgroundVariant.Dots}
+            gap={20}
+            size={1}
+            color={theme.palette.divider}
+          />
+          <ArrowMarker id="arrowhead" />
+          <Controls />
+          <MiniMap
+            style={{
+              backgroundColor: theme.palette.background.paper,
+            }}
+          />
+        </ReactFlow>
+      </ReactFlowProvider>
 
-        
-        <NodeContentModal
-          open={modalState.open}
-          onClose={closeModal}
-          url={modalState.url}
-          title={modalState.title}
-        />
+      <ContextMenu
+        anchorPosition={contextMenu}
+        onClose={closeContextMenu}
+        onCreateNode={createNodeFromContextMenu}
+        onDeleteNode={deleteNodeFromContextMenu}
+        onEditNode={handleEditNodeFromContextMenu}
+        onDeleteEdge={deleteEdgeFromContextMenu}
+        onToggleEdgeDirection={toggleEdgeDirection}
+        selectedNodeForDelete={selectedNodeForDelete}
+        selectedEdgeForDelete={selectedEdgeForDelete}
+        onToggleEdgeType={toggleEdgeType}
+      />
+
+      <NodeEditModal
+        open={isEditModalOpen}
+        onClose={closeEditModal}
+        node={selectedNodeForEdit}
+        onSave={updateNodeData}
+      />
+
+      <EdgeEditModal
+        open={isEdgeEditModalOpen}
+        onClose={closeEdgeEditModal}
+        edge={selectedEdgeForEdit}
+        nodes={nodes}
+        onSave={updateEdgeData}
+      />
+
+      <NodeContentModal
+        open={modalState.open}
+        onClose={closeModal}
+        url={modalState.url}
+        title={modalState.title}
+      />
+
+      {/* Widget de navegación */}
+      <div
+        style={{
+          position: 'absolute',
+          top: '10px',
+          right: '10px',
+          display: 'flex',
+          alignItems: 'center',
+          backgroundColor: '#ffffff',
+          border: '1px solid #ccc',
+          borderRadius: '8px',
+          padding: '8px',
+          boxShadow: '0px 4px 6px rgba(0, 0, 0, 0.1)',
+          zIndex: 1000,
+        }}
+      >
+        <button onClick={goBack} disabled={(currentHistoryIndex ?? 0) <= 0}>
+          ← Atrás
+        </button>
+        <span style={{ margin: '0 1rem' }}>
+          {(currentHistoryIndex ?? 0) + 1} / {history.length}
+        </span>
+        <button onClick={goForward} disabled={(currentHistoryIndex ?? 0) >= history.length - 1}>
+          Adelante →
+        </button>
       </div>
-    
+    </div>
   );
 };
 
