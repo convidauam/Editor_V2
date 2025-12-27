@@ -71,7 +71,7 @@ export const DiagramCanvas: React.FC = () => {
     isEdgeEditModalOpen,
     closeEditModal,
     closeEdgeEditModal,
-    importFromJson,    
+    importFromJson,
     toggleEdgeDirection,
     setNodes,
     setEdges,
@@ -103,7 +103,7 @@ export const DiagramCanvas: React.FC = () => {
     if (entry) {
       if (entry.url) {
         try {
-// Consultar al backend para verificar si la gráfica ha cambiado
+          // Consultar al backend para verificar si la gráfica ha cambiado
 
           const response = await fetch(entry.url);
           if (!response.ok) {
@@ -118,7 +118,7 @@ export const DiagramCanvas: React.FC = () => {
             setEdges(json.edges);
             console.log('La gráfica ha cambiado. Se ha actualizado desde el backend.');
           } else {
-// Si no ha cambiado, usar los datos almacenados en el historial
+            // Si no ha cambiado, usar los datos almacenados en el historial
             setNodes(entry.nodes);
             setEdges(entry.edges);
           }
@@ -130,7 +130,7 @@ export const DiagramCanvas: React.FC = () => {
       } else {
         setNodes(entry.nodes);
         setEdges(entry.edges);
-console.log(`Cargando gráfica desde el historial: ${entry.url || 'Sin URL'}`);
+        console.log(`Cargando gráfica desde el historial: ${entry.url || 'Sin URL'}`);
       }
 
       // Solo actualiza el historial del navegador si no estás navegando dentro del historial existente
@@ -161,8 +161,9 @@ console.log(`Cargando gráfica desde el historial: ${entry.url || 'Sin URL'}`);
   useEffect(() => {
     const loadDiagram = async () => {
       try {
-// Intentar cargar el diagrama desde el backend si se especifica una URL
-        const start_url = process.env.REACT_APP_START_URL;
+        // Intentar cargar el diagrama desde el backend si se especifica una URL
+        // const start_url = process.env.REACT_APP_START_URL;
+        const start_url = "http://localhost:6543/api/v1/node/20d6afc3-d291-493c-b91b-0e772d4336fa";
 
         if (start_url) {
           const response = await fetch(start_url);
@@ -171,9 +172,17 @@ console.log(`Cargando gráfica desde el historial: ${entry.url || 'Sin URL'}`);
           }
           const json = await response.json();
           if (json.nodes && json.edges) {
-            setNodes(json.nodes);
+            // Asignar posición por defecto si falta
+            const nodesWithPosition = json.nodes.map((node: any, idx: number) => ({
+              ...node,
+              position: node.position && typeof node.position.x === 'number' && typeof node.position.y === 'number'
+                ? node.position
+                : { x: 100 + idx * 40, y: 100 + idx * 40 },
+              data: node.data || { label: node.label, url: node.url, themeColor: 'default', iconUrl: node.iconUrl }
+            }));
+            setNodes(nodesWithPosition);
             setEdges(json.edges);
-            addToHistory({ nodes: json.nodes, edges: json.edges, url: start_url }); // Agregar al historial
+            addToHistory({ nodes: nodesWithPosition, edges: json.edges, url: start_url }); // Agregar al historial
             console.log('Diagrama cargado desde el backend.');
             return; // Salir si se cargó correctamente
           } else {
@@ -181,7 +190,7 @@ console.log(`Cargando gráfica desde el historial: ${entry.url || 'Sin URL'}`);
           }
         }
 
-// Si no se especifica una URL, cargar el diagrama predeterminado
+        // Si no se especifica una URL, cargar el diagrama predeterminado
         console.log('No se especificó una URL. Cargando el diagrama predeterminado.');
         const fallbackResponse = await fetch('/Diagramas/MapaDeSitioLineasPR.json');
         if (!fallbackResponse.ok) {
@@ -235,14 +244,14 @@ console.log(`Cargando gráfica desde el historial: ${entry.url || 'Sin URL'}`);
       prevEdges.map((edge) =>
         edge.id === selectedEdgeForDelete
           ? {
-              ...edge,
-              type: edge.type === 'default' ? 'arrow' : 'default', // Alternar entre 'default' y 'arrow'
-              style: {
-                stroke: '#000000', // Color negro para ambas líneas
-                strokeWidth: 2, // Ancho de línea consistente
-              },
-              markerEnd: edge.type === 'default' ? 'url(#arrowhead)' : undefined, // Flecha solo para 'arrow'
-            }
+            ...edge,
+            type: edge.type === 'default' ? 'arrow' : 'default', // Alternar entre 'default' y 'arrow'
+            style: {
+              stroke: '#000000', // Color negro para ambas líneas
+              strokeWidth: 2, // Ancho de línea consistente
+            },
+            markerEnd: edge.type === 'default' ? 'url(#arrowhead)' : undefined, // Flecha solo para 'arrow'
+          }
           : edge
       )
     );
