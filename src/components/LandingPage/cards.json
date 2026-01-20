@@ -1,0 +1,145 @@
+[
+  {
+    "id": 1,
+    "title": "Ciclo reproductivo",
+    "subtitle": "",
+    "module": "Módulo 01",
+    "imageUrl": "/landing/Artboard_24.png",
+    "imageGallery": [
+      "/landing/Artboard_24_2.png",
+      "/landing/Artboard_24.png"
+    ],
+    "buttonText": "Ver más",
+    "author": "Fernando Lopez",
+    "levels": "0/7 Niveles",
+    "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur."
+  },
+  {
+    "id": 2,
+    "title": "Ciclo reproductivo",
+    "subtitle": "",
+    "module": "Módulo 02",
+    "imageUrl": "/landing/Artboard_24.png",
+    "imageGallery": [
+      "/landing/Artboard_24.png",
+      "/landing/Artboard_24_2.png"
+    ],
+    "buttonText": "Iniciar",
+    "buttonVariant": "contained",
+    "author": "Hernán (PR), Dave, Jonathan",
+    "levels": "0/5 Niveles",
+    "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris."
+  },
+  {
+    "id": 3,
+    "title": "Ciclo reproductivo",
+    "subtitle": "",
+    "module": "Módulo 03",
+    "imageUrl": "/landing/Artboard_24.png",
+    "imageGallery": [
+      "/landing/Artboard_24.png",
+      "/landing/Artboard_24_2.png"
+    ],
+    "buttonText": "Iniciar",
+    "buttonVariant": "contained",
+    "author": "Hernán (PR), Dave, Jonathan",
+    "levels": "0/6 Niveles",
+    "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris."
+  },
+  {
+    "id": 4,
+    "title": "Ciclo reproductivo",
+    "subtitle": "",
+    "module": "Módulo 04",
+    "imageUrl": "/landing/Artboard_24.png",
+    "imageGallery": [
+      "/landing/Artboard_24.png",
+      "/landing/Artboard_24_2.png"
+    ],
+    "buttonText": "Iniciar",
+    "buttonVariant": "contained",
+    "author": "Hernán (PR), Dave, Jonathan",
+    "levels": "0/4 Niveles",
+    "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris."
+  },
+  {
+    "id": 5,
+    "title": "Ciclo reproductivo",
+    "subtitle": "",
+    "module": "Módulo 05",
+    "imageUrl": "/landing/Artboard_24.png",
+    "imageGallery": [
+      "/landing/Artboard_24.png",
+      "/landing/Artboard_24_2.png"
+    ],
+    "buttonText": "Iniciar",
+    "buttonVariant": "contained",
+    "author": "Hernán (PR), Dave, Jonathan",
+    "levels": "0/8 Niveles",
+    "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris."
+  },
+  {
+    "id": 6,
+    "title": "Ciclo reproductivo",
+    "subtitle": "",
+    "module": "Módulo 06",
+    "imageUrl": "/landing/Artboard_24.png",
+    "imageGallery": [
+      "/landing/Artboard_24.png",
+      "/landing/Artboard_24_2.png"
+    ],
+    "buttonText": "Iniciar",
+    "buttonVariant": "contained",
+    "author": "Hernán (PR), Dave, Jonathan",
+    "levels": "0/5 Niveles",
+    "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris."
+  },
+  {
+    "id": 7,
+    "title": "Ciclo reproductivo",
+    "subtitle": "",
+    "module": "Módulo 07",
+    "imageUrl": "/landing/Artboard_24.png",
+    "imageGallery": [
+      "/landing/Artboard_24.png",
+      "/landing/Artboard_24_2.png"
+    ],
+    "buttonText": "Iniciar",
+    "buttonVariant": "contained",
+    "author": "Hernán (PR), Dave, Jonathan",
+    "levels": "0/7 Niveles",
+    "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris."
+  },
+  {
+    "id": 8,
+    "title": "Ciclo reproductivo",
+    "subtitle": "",
+    "module": "Módulo 08",
+    "imageUrl": "/landing/Artboard_24.png",
+    "imageGallery": [
+      "/landing/Artboard_24.png",
+      "/landing/Artboard_24_2.png"
+    ],
+    "buttonText": "Iniciar",
+    "buttonVariant": "contained",
+    "author": "Hernán (PR), Dave, Jonathan",
+    "levels": "0/6 Niveles",
+    "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris."
+  },
+  {
+    "id": 9,
+    "title": "Ciclo reproductivo",
+    "subtitle": "",
+    "module": "Módulo 09",
+    "imageUrl": "/landing/Artboard_24.png",
+    "imageGallery": [
+      "/landing/Artboard_24.png",
+      "/landing/Artboard_24_2.png"
+    ],
+    "buttonText": "Iniciar",
+    "buttonVariant": "contained",
+    "author": "Hernán (PR), Dave, Jonathan",
+    "levels": "0/5 Niveles",
+    "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris."
+  }
+]
