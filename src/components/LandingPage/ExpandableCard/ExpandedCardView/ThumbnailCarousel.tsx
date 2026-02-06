@@ -11,7 +11,7 @@ export const ThumbnailCarousel: React.FC<ThumbnailCarouselProps> = ({ images, se
   return (
     <Box sx={{ 
       display: 'flex', 
-      gap: 1,
+      gap: { xs: 0.75, sm: 1 },
       overflowX: 'auto',
       pb: 1,
       '&::-webkit-scrollbar': {
@@ -27,9 +27,9 @@ export const ThumbnailCarousel: React.FC<ThumbnailCarouselProps> = ({ images, se
           key={index}
           onClick={() => onSelectImage(index)}
           sx={{
-            minWidth: 70,
-            height: 70,
-            borderRadius: 2,
+            minWidth: { xs: 55, sm: 65, md: 70 },
+            height: { xs: 55, sm: 65, md: 70 },
+            borderRadius: { xs: 1.5, sm: 2 },
             overflow: 'hidden',
             cursor: 'pointer',
             border: selectedImageIndex === index ? '3px solid #7c4dff' : '2px solid #ddd',

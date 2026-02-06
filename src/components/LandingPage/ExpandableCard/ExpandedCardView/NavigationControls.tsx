@@ -11,19 +11,54 @@ interface NavigationControlsProps {
 
 export const NavigationControls: React.FC<NavigationControlsProps> = ({ hasMultipleImages, onPrevImage, onNextImage, onClose }) => {
   return (
-    <Box sx={{ position: 'absolute', top: 12, right: 12, zIndex: 100, display: 'flex', gap: 1, alignItems: 'center' }}>
+    <Box sx={{ 
+      position: 'absolute', 
+      top: { xs: 8, sm: 10, md: 12 }, 
+      right: { xs: 8, sm: 10, md: 12 }, 
+      zIndex: 100, 
+      display: 'flex', 
+      gap: { xs: 0.5, sm: 1 }, 
+      alignItems: 'center' 
+    }}>
       {hasMultipleImages && (
         <>
-          <IconButton onClick={onPrevImage} sx={{ width: 36, height: 36, backgroundColor: 'rgba(0,0,0,0.05)', color: '#000', '&:hover': { backgroundColor: 'rgba(0,0,0,0.1)' } }}>
-            <Typography sx={{ fontSize: '1.3rem', fontWeight: 'bold' }}>‹</Typography>
+          <IconButton 
+            onClick={onPrevImage} 
+            sx={{ 
+              width: { xs: 32, sm: 36 }, 
+              height: { xs: 32, sm: 36 }, 
+              backgroundColor: 'rgba(0,0,0,0.05)', 
+              color: '#000', 
+              '&:hover': { backgroundColor: 'rgba(0,0,0,0.1)' } 
+            }}
+          >
+            <Typography sx={{ fontSize: { xs: '1.1rem', sm: '1.3rem' }, fontWeight: 'bold' }}>‹</Typography>
           </IconButton>
-          <IconButton onClick={onNextImage} sx={{ width: 36, height: 36, backgroundColor: 'rgba(0,0,0,0.05)', color: '#000', '&:hover': { backgroundColor: 'rgba(0,0,0,0.1)' } }}>
-            <Typography sx={{ fontSize: '1.3rem', fontWeight: 'bold' }}>›</Typography>
+          <IconButton 
+            onClick={onNextImage} 
+            sx={{ 
+              width: { xs: 32, sm: 36 }, 
+              height: { xs: 32, sm: 36 }, 
+              backgroundColor: 'rgba(0,0,0,0.05)', 
+              color: '#000', 
+              '&:hover': { backgroundColor: 'rgba(0,0,0,0.1)' } 
+            }}
+          >
+            <Typography sx={{ fontSize: { xs: '1.1rem', sm: '1.3rem' }, fontWeight: 'bold' }}>›</Typography>
           </IconButton>
         </>
       )}
-      <IconButton onClick={onClose} sx={{ width: 36, height: 36, backgroundColor: 'rgba(0,0,0,0.05)', color: '#000', '&:hover': { backgroundColor: 'rgba(0,0,0,0.1)' } }}>
-        <CloseIcon sx={{ fontSize: '1.2rem' }} />
+      <IconButton 
+        onClick={onClose} 
+        sx={{ 
+          width: { xs: 32, sm: 36 }, 
+          height: { xs: 32, sm: 36 }, 
+          backgroundColor: 'rgba(0,0,0,0.05)', 
+          color: '#000', 
+          '&:hover': { backgroundColor: 'rgba(0,0,0,0.1)' } 
+        }}
+      >
+        <CloseIcon sx={{ fontSize: { xs: '1rem', sm: '1.2rem' } }} />
       </IconButton>
     </Box>
   );

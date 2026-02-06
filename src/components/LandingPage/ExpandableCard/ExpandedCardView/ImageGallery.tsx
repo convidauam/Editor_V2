@@ -10,7 +10,8 @@ interface ImageGalleryProps {
 export const ImageGallery: React.FC<ImageGalleryProps> = ({ images, selectedImageIndex, cardTitle }) => {
   return (
     <Box sx={{ 
-      flex: '0 0 35%',
+      flex: { xs: '0 0 auto', md: '0 0 35%' },
+      height: { xs: '200px', sm: '250px', md: '100%' },
       position: 'relative',
       backgroundColor: '#f5f5f5',
       display: 'flex',

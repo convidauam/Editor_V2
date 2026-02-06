@@ -28,10 +28,11 @@ export const CardInfo: React.FC<CardInfoProps> = ({
 }) => {
   return (
     <Box sx={{ 
-      flex: '0 0 65%',
+      flex: { xs: '1', md: '0 0 65%' },
       display: 'flex',
       flexDirection: 'column',
       height: '100%',
+      minHeight: { xs: '400px', sm: '450px', md: 'auto' },
       position: 'relative',
       animation: 'slideInRight 0.5s ease-out 0.1s both',
       '@keyframes slideInRight': {

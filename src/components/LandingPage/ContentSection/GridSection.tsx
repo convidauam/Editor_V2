@@ -52,11 +52,12 @@ export const GridSection: React.FC<GridSectionProps> = ({
       />
     );
     
+    // Solo mostrar ExpandedCardContainer en desktop (md+)
     if (index === insertIndex && expandedCardId) {
       const expandedCard = contentCards.find(c => c.id === expandedCardId);
       if (expandedCard) {
         renderItems.push(
-          <Box key={`expanded-${expandedCardId}`} sx={{ gridColumn: '1 / -1' }}>
+          <Box key={`expanded-${expandedCardId}`} sx={{ gridColumn: '1 / -1', display: { xs: 'none', md: 'block' } }}>
             <ExpandedCardContainer
               card={expandedCard}
               onToggleExpand={() => onToggleExpand(expandedCardId)}

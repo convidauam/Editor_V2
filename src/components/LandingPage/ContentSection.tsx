@@ -35,13 +35,16 @@ export const ContentSection: React.FC = () => {
     const expandedCard = contentCards.find(c => c.id === expandedCardId);
     if (!expandedCard) return null;
 
+    // Solo mostrar ExpandedCardContainer en desktop (md+)
     return (
-      <ExpandedCardContainer
-        card={expandedCard}
-        onToggleExpand={() => handleExpandCard(expandedCardId)}
-        cardType={expandedCardId <= 3 ? 'medium' : 'small'}
-        containerRef={expandedCardRef}
-      />
+      <Box sx={{ display: { xs: 'none', md: 'block' } }}>
+        <ExpandedCardContainer
+          card={expandedCard}
+          onToggleExpand={() => handleExpandCard(expandedCardId)}
+          cardType={expandedCardId <= 3 ? 'medium' : 'small'}
+          containerRef={expandedCardRef}
+        />
+      </Box>
     );
   };
 

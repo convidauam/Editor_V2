@@ -3,7 +3,12 @@ import { Box, Button } from '@mui/material';
 
 export const ActionButtons: React.FC = () => {
   return (
-    <Box sx={{ p: 3, display: 'flex', gap: 2, justifyContent: 'flex-end' }}>
+    <Box sx={{ 
+      p: { xs: 2, sm: 2.5, md: 3 }, 
+      display: 'flex', 
+      gap: 2, 
+      justifyContent: { xs: 'center', sm: 'flex-end' } 
+    }}>
       <Button
         variant="contained"
         sx={{
@@ -12,8 +17,9 @@ export const ActionButtons: React.FC = () => {
           textTransform: 'none',
           fontFamily: 'Roboto',
           borderRadius: '20px',
-          px: 4,
-          py: 1,
+          px: { xs: 3, sm: 4 },
+          py: { xs: 0.8, sm: 1 },
+          fontSize: { xs: '0.9rem', sm: '1rem' },
           '&:hover': { backgroundColor: '#7C3AED' }
         }}
       >
