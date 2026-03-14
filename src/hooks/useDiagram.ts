@@ -211,9 +211,18 @@ export function useDiagram() {
   // Función para actualizar los datos del nodo editado
   const updateNodeData = (nodeId: string, newData: any) => {
     setNodes((prevNodes) =>
-      prevNodes.map((node) =>
-        node.id === nodeId ? { ...node, data: newData } : node
-      )
+      prevNodes.map((node) => {
+        if (node.id === nodeId) {
+          // Si newData.type existe, actualiza node.type
+          const { type, ...restData } = newData;
+          return {
+            ...node,
+            type: type ? type : node.type,
+            data: restData,
+          };
+        }
+        return node;
+      })
     );
   };
 

@@ -16,6 +16,15 @@ import { ContextMenu } from '../ContextMenu/ContextMenu';
 import { NodeEditModal } from '../NodeEditModal/NodeEditModal';
 import { EdgeEditModal } from '../EdgeEditModal/EdgeEditModal';
 import { CustomNode } from '../NodeTypes/CustomNode';
+import { ConectorNode } from '../NodeTypes/ConectorNode';
+import { SimpleTextNode } from '../NodeTypes/SimpleTextNode';
+import { RichTextNode } from '../NodeTypes/RichTextNode';
+import { ImageNode } from '../NodeTypes/ImageNode';
+import { AnimationNode } from '../NodeTypes/AnimationNode';
+import { WebPageNode } from '../NodeTypes/WebPageNode';
+import { InteractiveNode } from '../NodeTypes/InteractiveNode';
+import { AudioNode } from '../NodeTypes/AudioNode';
+import { AudiovisualNode } from '../NodeTypes/AudiovisualNode';
 import { CustomEdgeWithLabel } from '../EdgeTypes/CustomEdgeWithLabel';
 import { useTheme } from '@mui/material/styles';
 import { Toolbar } from '../Toolbar/Toolbar';
@@ -24,6 +33,15 @@ import NodeContentModal from './NodeContentModal';
 
 const nodeTypes = {
   custom: CustomNode,
+  conector: ConectorNode,
+  texto_simple: SimpleTextNode,
+  texto_enriquecido: RichTextNode,
+  imagenes: ImageNode,
+  animacion: AnimationNode,
+  pagina_web: WebPageNode,
+  interactivos: InteractiveNode,
+  audio: AudioNode,
+  audiovisual: AudiovisualNode,
 };
 
 const edgeTypes = {

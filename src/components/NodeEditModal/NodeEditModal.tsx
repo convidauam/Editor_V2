@@ -32,17 +32,33 @@ export const NodeEditModal: React.FC<NodeEditModalProps> = ({
 }) => {
   const [label, setLabel] = useState('');
   const [themeColor, setThemeColor] = useState<keyof typeof THEME_COLORS>('default');
+  const [nodeType, setNodeType] = useState<string>('custom');
+
+  const NODE_TYPE_OPTIONS = [
+    { label: 'Custom', value: 'custom' },
+    { label: 'Conector', value: 'conector' },
+    { label: 'Texto simple', value: 'texto_simple' },
+    { label: 'Texto enriquecido', value: 'texto_enriquecido' },
+    { label: 'Imágenes', value: 'imagenes' },
+    { label: 'Animación', value: 'animacion' },
+    { label: 'Página web', value: 'pagina_web' },
+    { label: 'Interactivos', value: 'interactivos' },
+    { label: 'Audio', value: 'audio' },
+    { label: 'Audiovisual', value: 'audiovisual' },
+  ];
 
   useEffect(() => {
     if (node) {
       setLabel(node.data.label || '');
       setThemeColor(node.data.themeColor || 'default');
+      setNodeType(node.type || 'custom');
     }
   }, [node]);
 
   const handleSave = () => {
     if (node) {
-      onSave(node.id, { ...node.data, label, themeColor });
+      // Guardar el tipo de nodo en node.type
+      onSave(node.id, { ...node.data, label, themeColor, type: nodeType });
       onClose();
     }
   };
@@ -51,6 +67,7 @@ export const NodeEditModal: React.FC<NodeEditModalProps> = ({
     if (node) {
       setLabel(node.data.label || '');
       setThemeColor(node.data.themeColor || 'default');
+      setNodeType(node.type || 'custom');
     }
     onClose();
   };
@@ -89,6 +106,21 @@ export const NodeEditModal: React.FC<NodeEditModalProps> = ({
           />
           
           <FormControl fullWidth sx={{ mb: 3 }}>
+            <InputLabel>Tipo de Nodo</InputLabel>
+            <Select
+              value={nodeType}
+              onChange={(e) => setNodeType(e.target.value as string)}
+              label="Tipo de Nodo"
+            >
+              {NODE_TYPE_OPTIONS.map((option) => (
+                <MenuItem key={option.value} value={option.value}>
+                  {option.label}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+
+          <FormControl fullWidth sx={{ mb: 3 }}>
             <InputLabel>Tema/Color</InputLabel>
             <Select
               value={themeColor}
@@ -115,12 +147,11 @@ export const NodeEditModal: React.FC<NodeEditModalProps> = ({
               ))}
             </Select>
           </FormControl>
-          
+
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
             <Typography variant="body2" color="text.secondary">
               Información del Nodo:
             </Typography>
-            
             <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
               <Chip 
                 label={`ID: ${node.id}`} 
@@ -129,7 +160,7 @@ export const NodeEditModal: React.FC<NodeEditModalProps> = ({
                 sx={{ fontFamily: 'monospace' }}
               />
               <Chip 
-                label={`Tipo: ${node.type || 'default'}`} 
+                label={`Tipo: ${nodeType}`} 
                 size="small" 
                 variant="outlined"
               />
@@ -168,4 +199,4 @@ export const NodeEditModal: React.FC<NodeEditModalProps> = ({
       </DialogActions>
     </Dialog>
   );
-}; 
+};
