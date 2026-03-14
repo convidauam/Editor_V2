@@ -40,9 +40,18 @@ export const DiagramCanvas: React.FC = () => {
   const theme = useTheme();
   const diagramRef = useRef<HTMLDivElement>(null);
   const [isLoading, setIsLoading] = React.useState(true); // Estado para el indicador de carga
-  const [history, setHistory] = React.useState<{ nodes: Node[]; edges: Edge[]; url?: string }[]>([]);
+  
+  // HISTORIAL DE NAVEGACIÓN ENTRE GRÁFICAS
+  // history: almacena las gráficas visitadas (nodos, edges y url opcional)
+  // currentHistoryIndex: índice actual dentro del historial
+  // historyLimit: máximo de entradas guardadas en el historial
+
+  /*
+    const [history, setHistory] = React.useState<{ nodes: Node[]; edges: Edge[]; url?: string }[]>([]);
   const [currentHistoryIndex, setCurrentHistoryIndex] = React.useState<number>(0); // Índice actual del historial
   const historyLimit = 3; // Número máximo de entradas en el historial
+  */
+
   const {
     nodes,
     edges,
@@ -81,13 +90,15 @@ export const DiagramCanvas: React.FC = () => {
     closeModal,
   } = useDiagram();
 
-  const addToHistory = (newEntry: { nodes: Node[]; edges: Edge[]; url?: string }) => {
+  // Agrega una nueva gráfica al historial y sincroniza el historial del navegador
+  /* const addToHistory = (newEntry: { nodes: Node[]; edges: Edge[]; url?: string }) => {
     setHistory((prevHistory) => {
       const updatedHistory = [...prevHistory, newEntry];
       if (updatedHistory.length > historyLimit) {
         updatedHistory.shift();
       }
 
+      // Sincroniza el historial del navegador (pushState)
       const state = { index: updatedHistory.length - 1 };
       const url = `/editor?diagram=${state.index}`;
       window.history.pushState(state, '', url);
@@ -97,14 +108,19 @@ export const DiagramCanvas: React.FC = () => {
       return updatedHistory;
     });
   };
+  */
 
+  // Carga una gráfica específica desde el historial (por índice)
+  // Si tiene URL, consulta al backend para ver si ha cambiado; si no, usa los datos guardados
+  // También sincroniza el historial del navegador si es necesario
+
+  /*
   const loadFromHistory = async (index: number) => {
     const entry = history[index];
     if (entry) {
       if (entry.url) {
         try {
-// Consultar al backend para verificar si la gráfica ha cambiado
-
+          // Consultar al backend para verificar si la gráfica ha cambiado
           const response = await fetch(entry.url);
           if (!response.ok) {
             throw new Error(`Error al consultar la URL: ${response.statusText}`);
@@ -118,7 +134,7 @@ export const DiagramCanvas: React.FC = () => {
             setEdges(json.edges);
             console.log('La gráfica ha cambiado. Se ha actualizado desde el backend.');
           } else {
-// Si no ha cambiado, usar los datos almacenados en el historial
+            // Si no ha cambiado, usar los datos almacenados en el historial
             setNodes(entry.nodes);
             setEdges(entry.edges);
           }
@@ -130,7 +146,7 @@ export const DiagramCanvas: React.FC = () => {
       } else {
         setNodes(entry.nodes);
         setEdges(entry.edges);
-console.log(`Cargando gráfica desde el historial: ${entry.url || 'Sin URL'}`);
+        console.log(`Cargando gráfica desde el historial: ${entry.url || 'Sin URL'}`);
       }
 
       // Solo actualiza el historial del navegador si no estás navegando dentro del historial existente
@@ -141,7 +157,11 @@ console.log(`Cargando gráfica desde el historial: ${entry.url || 'Sin URL'}`);
       }
     }
   };
+*/
 
+  // --- FUNCIONES DE NAVEGACIÓN ENTRE GRÁFICAS (ATRÁS / ADELANTE) ---
+
+ /* 
   const goBack = () => {
     if (currentHistoryIndex > 0) {
       const newIndex = currentHistoryIndex - 1;
@@ -157,6 +177,7 @@ console.log(`Cargando gráfica desde el historial: ${entry.url || 'Sin URL'}`);
       loadFromHistory(newIndex);
     }
   };
+*/
 
   useEffect(() => {
     const loadDiagram = async () => {
@@ -173,7 +194,7 @@ console.log(`Cargando gráfica desde el historial: ${entry.url || 'Sin URL'}`);
           if (json.nodes && json.edges) {
             setNodes(json.nodes);
             setEdges(json.edges);
-            addToHistory({ nodes: json.nodes, edges: json.edges, url: start_url }); // Agregar al historial
+            // addToHistory({ nodes: json.nodes, edges: json.edges, url: start_url }); // Agregar al historial
             console.log('Diagrama cargado desde el backend.');
             return; // Salir si se cargó correctamente
           } else {
@@ -191,7 +212,7 @@ console.log(`Cargando gráfica desde el historial: ${entry.url || 'Sin URL'}`);
         if (fallbackJson.nodes && fallbackJson.edges) {
           setNodes(fallbackJson.nodes);
           setEdges(fallbackJson.edges);
-          addToHistory({ nodes: fallbackJson.nodes, edges: fallbackJson.edges, url: '/Diagramas/MapaDeSitioLineasPR.json' }); // Agregar al historial
+          //addToHistory({ nodes: fallbackJson.nodes, edges: fallbackJson.edges, url: '/Diagramas/MapaDeSitioLineasPR.json' }); // Agregar al historial
           console.log('Diagrama predeterminado cargado correctamente.');
         } else {
           throw new Error('El JSON predeterminado no tiene el formato esperado.');
@@ -205,6 +226,10 @@ console.log(`Cargando gráfica desde el historial: ${entry.url || 'Sin URL'}`);
     loadDiagram();
   }, [setNodes, setEdges]);
 
+  // --- HOOK flechas del navegador ---
+  // Permite que las flechas del navegador (adelante/atrás) funcionen con el historial de gráficas
+
+  /*
   useEffect(() => {
     const handlePopState = (event: PopStateEvent) => {
       const state = event.state;
@@ -222,6 +247,7 @@ console.log(`Cargando gráfica desde el historial: ${entry.url || 'Sin URL'}`);
       window.onpopstate = null; // Limpia el evento al desmontar el componente
     };
   }, [loadFromHistory]);
+  */
 
   const onPaneClick = useCallback(() => {
     closeContextMenu();
@@ -344,32 +370,6 @@ console.log(`Cargando gráfica desde el historial: ${entry.url || 'Sin URL'}`);
         title={modalState.title}
       />
 
-      {/* Widget de navegación */}
-      <div
-        style={{
-          position: 'absolute',
-          top: '10px',
-          right: '10px',
-          display: 'flex',
-          alignItems: 'center',
-          backgroundColor: '#ffffff',
-          border: '1px solid #ccc',
-          borderRadius: '8px',
-          padding: '8px',
-          boxShadow: '0px 4px 6px rgba(0, 0, 0, 0.1)',
-          zIndex: 1000,
-        }}
-      >
-        <button onClick={goBack} disabled={(currentHistoryIndex ?? 0) <= 0}>
-          ← Atrás
-        </button>
-        <span style={{ margin: '0 1rem' }}>
-          {(currentHistoryIndex ?? 0) + 1} / {history.length}
-        </span>
-        <button onClick={goForward} disabled={(currentHistoryIndex ?? 0) >= history.length - 1}>
-          Adelante →
-        </button>
-      </div>
     </div>
   );
 };
