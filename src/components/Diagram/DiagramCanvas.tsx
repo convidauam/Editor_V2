@@ -106,6 +106,8 @@ export const DiagramCanvas: React.FC = () => {
     modalState,
     handleNodeClick,
     closeModal,
+    pendingNodePosition,
+    setPendingNodePosition,
   } = useDiagram();
 
   // Agrega una nueva gráfica al historial y sincroniza el historial del navegador
@@ -370,7 +372,27 @@ export const DiagramCanvas: React.FC = () => {
         open={isEditModalOpen}
         onClose={closeEditModal}
         node={selectedNodeForEdit}
-        onSave={updateNodeData}
+        onSave={(nodeId, newData) => {
+          // Si nodeId está vacío, es un nuevo nodo
+          if (!nodeId && pendingNodePosition) {
+            // Crear el nodo con los datos del modal
+            setNodes((nds) => [
+              ...nds,
+              {
+                id: Math.random().toString(36).substr(2, 9), // id aleatorio
+                data: { label: newData.label, themeColor: newData.themeColor },
+                position: pendingNodePosition,
+                type: newData.type || 'custom',
+              },
+            ]);
+            setPendingNodePosition(null);
+            closeEditModal();
+          } else {
+            // Edición de nodo existente
+            updateNodeData(nodeId, newData);
+            closeEditModal();
+          }
+        }}
       />
 
       <EdgeEditModal

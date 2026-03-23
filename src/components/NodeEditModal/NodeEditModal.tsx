@@ -91,6 +91,9 @@ export const NodeEditModal: React.FC<NodeEditModalProps> = ({
         <Typography variant="h6" component="div" sx={{ fontWeight: 600 }}>
           Editar Nodo
         </Typography>
+        <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+          Conecta el nodo con otro para acceder a la plantilla
+        </Typography>
       </DialogTitle>
       
       <DialogContent>
