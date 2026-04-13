@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Container, Typography, CircularProgress, Box, Breadcrumbs, Link, Alert, Button, Card, CardContent, Chip, Paper, Divider } from '@mui/material';
+import { Container, Typography, CircularProgress, Box, Breadcrumbs, Link, Alert, Button, Card, CardContent, Chip, Paper, Divider, IconButton, Tooltip, Snackbar } from '@mui/material';
 import { honeycombApi } from '../../services/honeycombApi';
 import HiveIcon from '@mui/icons-material/Hive';
 import EditIcon from '@mui/icons-material/Edit';
 import CodeIcon from '@mui/icons-material/Code';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import GridViewIcon from '@mui/icons-material/GridView';
+import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 
 export const HoneycombView: React.FC = () => {
   const { name } = useParams<{ name: string }>();
@@ -14,6 +15,7 @@ export const HoneycombView: React.FC = () => {
   const [honeycomb, setHoneycomb] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [copiedId, setCopiedId] = useState<string | null>(null);
 
   useEffect(() => {
     if (name) loadHoneycomb(name);
@@ -32,6 +34,20 @@ export const HoneycombView: React.FC = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleCopyId = (id: string, event: React.MouseEvent) => {
+    event.stopPropagation();
+    navigator.clipboard.writeText(id).then(() => {
+      setCopiedId(id);
+      console.log('✅ ID copiado al portapapeles:', id);
+    }).catch((err) => {
+      console.error('❌ Error al copiar ID:', err);
+    });
+  };
+
+  const handleCloseSnackbar = () => {
+    setCopiedId(null);
   };
 
   if (loading) {
@@ -306,21 +322,40 @@ export const HoneycombView: React.FC = () => {
                       >
                         {node.data?.label || 'Sin título'}
                       </Typography>
-                      <Typography 
-                        variant="caption" 
-                        sx={{ 
-                          display: 'block', 
-                          mb: 1.5,
-                          color: '#666', // Color más oscuro para mejor contraste
-                          fontFamily: 'monospace',
-                          backgroundColor: '#f5f5f5',
-                          padding: '4px 8px',
-                          borderRadius: 1,
-                          fontSize: '0.7rem'
-                        }}
-                      >
-                        ID: {node.id.substring(0, 8)}...
-                      </Typography>
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, mb: 1.5 }}>
+                        <Typography 
+                          variant="caption" 
+                          sx={{ 
+                            display: 'block',
+                            color: '#666',
+                            fontFamily: 'monospace',
+                            backgroundColor: '#f5f5f5',
+                            padding: '4px 8px',
+                            borderRadius: 1,
+                            fontSize: '0.7rem',
+                            flex: 1
+                          }}
+                        >
+                          ID: {node.id.substring(0, 8)}...
+                        </Typography>
+                        <Tooltip title="Copiar ID completo" arrow>
+                          <IconButton
+                            size="small"
+                            onClick={(e) => handleCopyId(node.id, e)}
+                            sx={{
+                              padding: '4px',
+                              backgroundColor: '#f5f5f5',
+                              '&:hover': {
+                                backgroundColor: '#667eea',
+                                color: 'white'
+                              },
+                              transition: 'all 0.2s'
+                            }}
+                          >
+                            <ContentCopyIcon sx={{ fontSize: '0.9rem' }} />
+                          </IconButton>
+                        </Tooltip>
+                      </Box>
                       <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
                         {node.data?.url && (
                           <Chip 
@@ -345,6 +380,22 @@ export const HoneycombView: React.FC = () => {
           </Box>
         )}
       </Container>
+
+      {/* Snackbar para confirmar que se copió el ID */}
+      <Snackbar
+        open={copiedId !== null}
+        autoHideDuration={2000}
+        onClose={handleCloseSnackbar}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+        message={`✅ ID copiado: ${copiedId?.substring(0, 8)}...`}
+        sx={{
+          '& .MuiSnackbarContent-root': {
+            backgroundColor: '#4caf50',
+            color: 'white',
+            fontWeight: 600
+          }
+        }}
+      />
     </Box>
   );
 };

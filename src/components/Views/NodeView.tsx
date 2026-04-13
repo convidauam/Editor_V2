@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Container, Typography, CircularProgress, Box, Breadcrumbs, Link, Card, CardContent, Alert, Button, Divider, IconButton, Menu, MenuItem, Chip, Paper, CardActionArea, Dialog, DialogTitle, DialogContent, DialogActions } from '@mui/material';
+import { Container, Typography, CircularProgress, Box, Breadcrumbs, Link, Card, CardContent, Alert, Button, Divider, IconButton, Chip, Paper, CardActionArea, Dialog, DialogTitle, DialogContent, DialogActions, Tooltip, Snackbar } from '@mui/material';
 import TranslateIcon from '@mui/icons-material/Translate';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import HomeIcon from '@mui/icons-material/Home';
 import LinkIcon from '@mui/icons-material/Link';
 import ArticleIcon from '@mui/icons-material/Article';
+import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import { honeycombApi, NodeData } from '../../services/honeycombApi';
 import { useTranslation } from 'react-i18next';
 import i18n from '../../i18n/config';
@@ -26,6 +27,7 @@ export const NodeView: React.FC = () => {
   const [extractedMediaUrl, setExtractedMediaUrl] = useState<string | null>(null);
   const [isChildModalOpen, setIsChildModalOpen] = useState(false);
   const [selectedChildNode, setSelectedChildNode] = useState<NodeData | null>(null);
+  const [copiedId, setCopiedId] = useState<string | null>(null);
 
   useEffect(() => {
     if (nodeId) loadNode(nodeId);
@@ -125,6 +127,16 @@ export const NodeView: React.FC = () => {
   const handleCloseChildModal = () => {
     setIsChildModalOpen(false);
     setSelectedChildNode(null);
+  };
+
+  const handleCopyId = (id: string, event: React.MouseEvent) => {
+    event.stopPropagation();
+    navigator.clipboard.writeText(id);
+    setCopiedId(id);
+  };
+
+  const handleCloseSnackbar = () => {
+    setCopiedId(null);
   };
 
   if (loading) {
@@ -564,24 +576,43 @@ export const NodeView: React.FC = () => {
                             {childNode.label || childNode.title || 'Sin título'}
                           </Typography>
                           
-                          <Typography 
-                            variant="caption" 
-                            sx={{ 
-                              display: 'block',
-                              color: '#666',
-                              fontWeight: 600,
-                              backgroundColor: '#f5f5f5',
-                              padding: '4px 8px',
-                              borderRadius: 1,
-                              fontSize: '0.65rem',
-                              overflow: 'hidden',
-                              textOverflow: 'ellipsis',
-                              whiteSpace: 'nowrap',
-                              mb: 1
-                            }}
-                          >
-                            ID: {childNode.id.substring(0, 12)}...
-                          </Typography>
+                          <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, mb: 1 }}>
+                            <Typography 
+                              variant="caption" 
+                              sx={{ 
+                                display: 'block',
+                                color: '#666',
+                                fontWeight: 600,
+                                backgroundColor: '#f5f5f5',
+                                padding: '4px 8px',
+                                borderRadius: 1,
+                                fontSize: '0.65rem',
+                                flex: 1,
+                                overflow: 'hidden',
+                                textOverflow: 'ellipsis',
+                                whiteSpace: 'nowrap'
+                              }}
+                            >
+                              ID: {childNode.id.substring(0, 12)}...
+                            </Typography>
+                            <Tooltip title="Copiar ID completo" arrow>
+                              <IconButton
+                                size="small"
+                                onClick={(e) => handleCopyId(childNode.id, e)}
+                                sx={{
+                                  padding: '4px',
+                                  backgroundColor: '#f5f5f5',
+                                  '&:hover': {
+                                    backgroundColor: '#667eea',
+                                    color: 'white'
+                                  },
+                                  transition: 'all 0.2s'
+                                }}
+                              >
+                                <ContentCopyIcon sx={{ fontSize: '0.8rem' }} />
+                              </IconButton>
+                            </Tooltip>
+                          </Box>
                           
                           {/* Mostrar tipo de nodo si existe */}
                           {childNode.type && (
@@ -733,6 +764,22 @@ export const NodeView: React.FC = () => {
           </>
         )}
       </Dialog>
+
+      {/* Snackbar para confirmar que se copió el ID */}
+      <Snackbar
+        open={copiedId !== null}
+        autoHideDuration={2000}
+        onClose={handleCloseSnackbar}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+        message={`✅ ID copiado: ${copiedId?.substring(0, 8)}...`}
+        sx={{
+          '& .MuiSnackbarContent-root': {
+            backgroundColor: '#4caf50',
+            color: 'white',
+            fontWeight: 600
+          }
+        }}
+      />
     </Box>
   );
 };

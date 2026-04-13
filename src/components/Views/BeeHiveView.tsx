@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Container, Typography, Card, CardContent, CardActionArea, CircularProgress, Box, Alert, Button, Chip, Paper, Divider } from '@mui/material';
+import { Container, Typography, Card, CardContent, CircularProgress, Box, Alert, Button, Chip, Paper, Divider, IconButton, Tooltip, Snackbar } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { honeycombApi, HoneycombItem } from '../../services/honeycombApi';
 import HiveIcon from '@mui/icons-material/Hive';
@@ -7,11 +7,13 @@ import EditIcon from '@mui/icons-material/Edit';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import GridViewIcon from '@mui/icons-material/GridView';
 import HomeIcon from '@mui/icons-material/Home';
+import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 
 export const BeeHiveView: React.FC = () => {
   const [honeycombs, setHoneycombs] = useState<HoneycombItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [copiedId, setCopiedId] = useState<string | null>(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -33,12 +35,22 @@ export const BeeHiveView: React.FC = () => {
     }
   };
 
-  const handleGoToLandingPage = async () => {
-    try {
-      navigate('/');
-    } catch (error) {
-      console.error('Error navigating to landing page:', error);
-    }
+  const handleGoToLandingPage = () => {
+    window.location.href = 'http://localhost:3001'; // Puerto del Frontend
+  };
+
+  const handleCopyId = (id: string, event: React.MouseEvent) => {
+    event.stopPropagation(); // Prevenir navegación al honeycomb
+    navigator.clipboard.writeText(id).then(() => {
+      setCopiedId(id);
+      console.log('✅ ID copiado al portapapeles:', id);
+    }).catch((err) => {
+      console.error('❌ Error al copiar ID:', err);
+    });
+  };
+
+  const handleCloseSnackbar = () => {
+    setCopiedId(null);
   };
 
   const handleGoToEditor = async () => {
@@ -346,11 +358,10 @@ export const BeeHiveView: React.FC = () => {
                   navigate(`/honeycomb/${hc.id}`);
                 }}
               >
-                <CardActionArea sx={{ height: '100%' }}>
-                  <CardContent sx={{ p: 3, backgroundColor: '#ffffff' }}>
-                    <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 2 }}>
-                      {hc.icon && (
-                        <Box 
+                <CardContent sx={{ p: 3, backgroundColor: '#ffffff', height: '100%' }}>
+                  <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 2 }}>
+                    {hc.icon && (
+                      <Box 
                           sx={{ 
                             fontSize: '3rem',
                             display: 'flex',
@@ -381,20 +392,40 @@ export const BeeHiveView: React.FC = () => {
                         >
                           {hc.title}
                         </Typography>
-                        <Typography 
-                          variant="caption" 
-                          sx={{ 
-                            display: 'block',
-                            color: '#666', // Color más oscuro para mejor contraste
-                            fontFamily: 'monospace',
-                            backgroundColor: '#f5f5f5',
-                            padding: '4px 8px',
-                            borderRadius: 1,
-                            fontSize: '0.7rem'
-                          }}
-                        >
-                          ID: {hc.id.substring(0, 16)}...
-                        </Typography>
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                          <Typography 
+                            variant="caption" 
+                            sx={{ 
+                              display: 'block',
+                              color: '#666',
+                              fontFamily: 'monospace',
+                              backgroundColor: '#f5f5f5',
+                              padding: '4px 8px',
+                              borderRadius: 1,
+                              fontSize: '0.7rem',
+                              flex: 1
+                            }}
+                          >
+                            ID: {hc.id.substring(0, 16)}...
+                          </Typography>
+                          <Tooltip title="Copiar ID completo" arrow>
+                            <IconButton
+                              size="small"
+                              onClick={(e) => handleCopyId(hc.id, e)}
+                              sx={{
+                                padding: '4px',
+                                backgroundColor: '#f5f5f5',
+                                '&:hover': {
+                                  backgroundColor: '#F7931E',
+                                  color: 'white'
+                                },
+                                transition: 'all 0.2s'
+                              }}
+                            >
+                              <ContentCopyIcon sx={{ fontSize: '0.9rem' }} />
+                            </IconButton>
+                          </Tooltip>
+                        </Box>
                         <Box sx={{ mt: 2 }}>
                           <Chip 
                             label={`Honeycomb #${index + 1}`}
@@ -410,12 +441,28 @@ export const BeeHiveView: React.FC = () => {
                       </Box>
                     </Box>
                   </CardContent>
-                </CardActionArea>
-              </Card>
-            ))}
-          </Box>
-        )}
+                </Card>
+              ))}
+            </Box>
+          )
+        }
       </Container>
+
+      {/* Snackbar para confirmar que se copió el ID */}
+      <Snackbar
+        open={copiedId !== null}
+        autoHideDuration={2000}
+        onClose={handleCloseSnackbar}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+        message={`✅ ID copiado: ${copiedId?.substring(0, 8)}...`}
+        sx={{
+          '& .MuiSnackbarContent-root': {
+            backgroundColor: '#4caf50',
+            color: 'white',
+            fontWeight: 600
+          }
+        }}
+      />
     </Box>
   );
 };

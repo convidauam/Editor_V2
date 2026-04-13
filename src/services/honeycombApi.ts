@@ -11,14 +11,14 @@ export interface HoneycombItem {
 export interface NodeData {
   id: string;
   label: string;
-  title?: string; // ✅ Tipo de celda
-  type?: string; // ✅ Tipo de celda
-  contents?: string; // ✅ Para CellText
-  source?: string; // ✅ Para CellRichText (HTML)
-  href?: string; // ✅ Para CellWebContent y CellAnimation
-  icon?: string; // ✅ Para CellIcon
-  iconUrl?: string; // ✅ Para CellIcon
-  url?: string; // ✅ URL del recurso Pyramid
+  title?: string; //  Tipo de celda
+  type?: string; // Tipo de celda
+  contents?: string; //  Para CellText
+  source?: string; //  Para CellRichText (HTML)
+  href?: string; //  Para CellWebContent y CellAnimation
+  icon?: string; //  Para CellIcon
+  iconUrl?: string; //  Para CellIcon
+  url?: string; //  URL del recurso Pyramid
   nodes: any[];
   edges: any[];
 }
@@ -95,11 +95,11 @@ export const honeycombApi = {
       }
       
       const data = await response.json();
-      console.log('📦 Node data received:', data);
-      console.log('🔗 Node URL field:', data.url);
-      console.log('🔗 Node href field:', data.href);
-      console.log('🎨 Node icon field:', data.icon);
-      console.log('📋 All data keys:', Object.keys(data));
+      console.log(' Node data received:', data);
+      console.log(' Node URL field:', data.url);
+      console.log(' Node href field:', data.href);
+      console.log(' Node icon field:', data.icon);
+      console.log(' All data keys:', Object.keys(data));
       
       // Procesar el href para construir URL completa si es relativa
       if (data.href && !data.href.startsWith('http')) {

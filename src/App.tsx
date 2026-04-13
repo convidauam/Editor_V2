@@ -6,7 +6,6 @@ import { DiagramCanvas } from './components/Diagram/DiagramCanvas';
 import { BeeHiveView } from './components/Views/BeeHiveView';
 import { HoneycombView } from './components/Views/HoneycombView';
 import { NodeView } from './components/Views/NodeView';
-import { LandingPage } from './components/Views/LandingPage';
 
 
 function EditorWrapper() {
@@ -28,7 +27,7 @@ function App() {
       <CssBaseline />
       <Router>
         <Routes>
-          <Route path="/" element={<LandingPage />} />
+          <Route path="/" element={<BeeHiveView />} />
           <Route path="/beehive" element={<BeeHiveView />} />
           <Route path="/editor" element={<EditorWrapper />} />
           <Route path="/honeycomb/:name" element={<HoneycombView />} />
