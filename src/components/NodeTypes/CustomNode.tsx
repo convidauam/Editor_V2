@@ -2,10 +2,22 @@ import React from 'react';
 import { Handle, Position, NodeProps } from 'reactflow';
 import { Box, Typography } from '@mui/material';
 import { getThemeColor } from '../../utils/themeColors';
+import 'katex/dist/katex.min.css';
+import { InlineMath } from 'react-katex';
 
 export const CustomNode: React.FC<NodeProps> = ({ data, selected }) => {
   const themeColor = data.themeColor ? getThemeColor(data.themeColor) : '#1976d2';
   const hasUrl = Boolean(data.url);
+
+  // Función para renderizar el label con KaTeX si detecta $...$
+  const renderLabel = (label: string) => {
+    if (typeof label === 'string' && /^\$.*\$$/.test(label.trim())) {
+      // Elimina los delimitadores $...$
+      const math = label.trim().slice(1, -1);
+      return <InlineMath math={math} />;
+    }
+    return <span>{label}</span>;
+  };
 
   return (
     <Box
@@ -22,7 +34,7 @@ export const CustomNode: React.FC<NodeProps> = ({ data, selected }) => {
         justifyContent: 'space-between',
         padding: '8px',
         gap: '8px',
-        cursor: hasUrl ? 'pointer' : 'default', //solo se mostrara si el nodo tiene URL
+        cursor: hasUrl ? 'pointer' : 'default',
         '&:hover': hasUrl ? {
           boxShadow: 3,
           borderColor: '#1976d2',
@@ -49,8 +61,8 @@ export const CustomNode: React.FC<NodeProps> = ({ data, selected }) => {
           src={data.iconUrl}
           alt={data.label}
           sx={{
-            width: 100, // Duplicamos el tamaño del ancho
-            height: 100, // Duplicamos el tamaño del alto
+            width: 100,
+            height: 100,
             objectFit: 'contain',
             borderRadius: '50%',
             border: '1px solid #ccc',
@@ -69,7 +81,7 @@ export const CustomNode: React.FC<NodeProps> = ({ data, selected }) => {
           flex: 1,
         }}
       >
-        {data.label}
+        {renderLabel(data.label)}
       </Typography>
 
       {/* Handles para conexiones */}

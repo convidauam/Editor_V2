@@ -45,6 +45,8 @@ export function useDiagram() {
   // Estado para el modal de edición de nodo
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [selectedNodeForEdit, setSelectedNodeForEdit] = useState<Node | null>(null);
+  // Estado para crear un nuevo nodo desde el modal
+  const [pendingNodePosition, setPendingNodePosition] = useState<{ x: number; y: number } | null>(null);
 
   // Estado para el modal de edición de edge
   const [isEdgeEditModalOpen, setIsEdgeEditModalOpen] = useState(false);
@@ -115,6 +117,7 @@ export function useDiagram() {
     setSelectedEdgeForDelete(null);
   }, []);
 
+  // Nuevo flujo: solo abre el modal de edición, no crea el nodo aún
   const createNodeFromContextMenu = useCallback(() => {
     if (!reactFlowInstance || !contextMenu) return;
 
@@ -126,16 +129,17 @@ export function useDiagram() {
       y: contextMenu.y - reactFlowBounds.top,
     });
 
-    const newNode: Node = {
-      id: generateNodeId(),
-      data: { label: 'Nuevo nodo', themeColor: 'default' },
+    // Guardar la posición para el nuevo nodo y abrir el modal
+    setPendingNodePosition(position);
+    setSelectedNodeForEdit({
+      id: '', // id vacío para distinguir que es nuevo
+      data: { label: '', themeColor: 'default' },
       position,
       type: 'custom',
-    };
-
-    setNodes((nds) => [...nds, newNode]);
+    });
+    setIsEditModalOpen(true);
     closeContextMenu();
-  }, [reactFlowInstance, contextMenu, setNodes, closeContextMenu]);
+  }, [reactFlowInstance, contextMenu, closeContextMenu]);
 
   const deleteNodeFromContextMenu = useCallback(() => {
     if (!selectedNodeForDelete) return;
@@ -211,9 +215,18 @@ export function useDiagram() {
   // Función para actualizar los datos del nodo editado
   const updateNodeData = (nodeId: string, newData: any) => {
     setNodes((prevNodes) =>
-      prevNodes.map((node) =>
-        node.id === nodeId ? { ...node, data: newData } : node
-      )
+      prevNodes.map((node) => {
+        if (node.id === nodeId) {
+          // Si newData.type existe, actualiza node.type
+          const { type, ...restData } = newData;
+          return {
+            ...node,
+            type: type ? type : node.type,
+            data: restData,
+          };
+        }
+        return node;
+      })
     );
   };
 
@@ -304,5 +317,8 @@ export function useDiagram() {
     modalState,
     handleNodeClick,
     closeModal,
+    // Nuevo estado para creación de nodo
+    pendingNodePosition,
+    setPendingNodePosition,
   };
 };

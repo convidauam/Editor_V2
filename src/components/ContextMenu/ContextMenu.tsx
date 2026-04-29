@@ -1,18 +1,20 @@
+
 import React from 'react';
-import { Menu, MenuItem, ListItemIcon, ListItemText } from '@mui/material';
-import { Add, Delete, SwapHoriz, LineStyle, Edit } from '@mui/icons-material';
+import { Menu, MenuItem, ListItemIcon, ListItemText, Menu as MuiMenu } from '@mui/material';
+import { Add, Delete, SwapHoriz, LineStyle, Edit, Category } from '@mui/icons-material';
 
 interface ContextMenuProps {
   anchorPosition: { x: number; y: number } | null;
   onClose: () => void;
   onCreateNode: () => void;
   onDeleteNode: () => void;
-  onEditNode: () => void; // <-- NUEVO
+  onEditNode: () => void;
   onDeleteEdge: () => void;
   onToggleEdgeDirection: () => void;
   onToggleEdgeType: () => void;
   selectedNodeForDelete: string | null;
   selectedEdgeForDelete: string | null;
+  onChangeNodeType?: (type: string) => void;
 }
 
 export const ContextMenu: React.FC<ContextMenuProps> = ({
@@ -20,13 +22,45 @@ export const ContextMenu: React.FC<ContextMenuProps> = ({
   onClose,
   onCreateNode,
   onDeleteNode,
-  onEditNode, // <-- NUEVO
+  onEditNode,
   onDeleteEdge,
   onToggleEdgeDirection,
   onToggleEdgeType,
   selectedNodeForDelete,
   selectedEdgeForDelete,
+  onChangeNodeType,
 }) => {
+    // Estado para el submenú de tipo de nodo
+    const [nodeTypeMenuAnchor, setNodeTypeMenuAnchor] = React.useState<null | HTMLElement>(null);
+
+    const nodeTypes = [
+      { label: 'Custom', value: 'custom' },
+      { label: 'Conector', value: 'conector' },
+      { label: 'Texto simple', value: 'texto_simple' },
+      { label: 'Texto enriquecido', value: 'texto_enriquecido' },
+      { label: 'Imágenes', value: 'imagenes' },
+      { label: 'Animación', value: 'animacion' },
+      { label: 'Página web', value: 'pagina_web' },
+      { label: 'Interactivos', value: 'interactivos' },
+      { label: 'Audio', value: 'audio' },
+      { label: 'Audiovisual', value: 'audiovisual' },
+    ];
+
+    const handleNodeTypeMenuOpen = (event: React.MouseEvent<HTMLLIElement>) => {
+      setNodeTypeMenuAnchor(event.currentTarget);
+    };
+
+    const handleNodeTypeMenuClose = () => {
+      setNodeTypeMenuAnchor(null);
+    };
+
+    const handleNodeTypeSelect = (type: string) => {
+      if (onChangeNodeType) {
+        onChangeNodeType(type);
+      }
+      handleNodeTypeMenuClose();
+      onClose();
+    };
   const handleCreateNode = () => {
     onCreateNode();
     onClose();
@@ -91,6 +125,29 @@ export const ContextMenu: React.FC<ContextMenuProps> = ({
             </ListItemIcon>
             <ListItemText primary="Editar Nodo" />
           </MenuItem>
+
+          {/* // Submenú para elegir tipo de nodo, implementado dentro de "Editar Nodo"
+          <MenuItem onClick={handleNodeTypeMenuOpen}>
+            <ListItemIcon>
+              <Category />
+            </ListItemIcon>
+            <ListItemText primary="Elegir tipo de nodo" />
+          </MenuItem>
+          <MuiMenu
+            anchorEl={nodeTypeMenuAnchor}
+            open={Boolean(nodeTypeMenuAnchor)}
+            onClose={handleNodeTypeMenuClose}
+            anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+            transformOrigin={{ vertical: 'top', horizontal: 'left' }}
+          >
+            {nodeTypes.map((type) => (
+              <MenuItem key={type.value} onClick={() => handleNodeTypeSelect(type.value)}>
+                <ListItemText primary={type.label} />
+              </MenuItem>
+            ))}
+          </MuiMenu>
+          */}
+
         </>
       )}
 
