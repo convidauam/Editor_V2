@@ -64,11 +64,28 @@ export const DiagramCanvas: React.FC = () => {
   // currentHistoryIndex: índice actual dentro del historial
   // historyLimit: máximo de entradas guardadas en el historial
 
-  /*
-    const [history, setHistory] = React.useState<{ nodes: Node[]; edges: Edge[]; url?: string }[]>([]);
+  const [history, setHistory] = React.useState<{ nodes: Node[]; edges: Edge[]; url?: string }[]>([]);
   const [currentHistoryIndex, setCurrentHistoryIndex] = React.useState<number>(0); // Índice actual del historial
   const historyLimit = 3; // Número máximo de entradas en el historial
-  */
+
+  // Agrega una nueva gráfica al historial y sincroniza el historial del navegador
+  const addToHistory = (newEntry: { nodes: Node[]; edges: Edge[]; url?: string }) => {
+    setHistory((prevHistory) => {
+      const updatedHistory = [...prevHistory, newEntry];
+      if (updatedHistory.length > historyLimit) {
+        updatedHistory.shift();
+      }
+
+      // Sincroniza el historial del navegador (pushState)
+      // const state = { index: updatedHistory.length - 1 };
+      // const url = `/editor?diagram=${state.index}`;
+      // window.history.pushState(state, '', url);
+
+      setCurrentHistoryIndex(updatedHistory.length - 1); // Actualiza el índice actual
+
+      return updatedHistory;
+    });
+  };
 
   const {
     nodes,
@@ -170,11 +187,11 @@ export const DiagramCanvas: React.FC = () => {
       }
 
       // Solo actualiza el historial del navegador si no estás navegando dentro del historial existente
-      if (index !== currentHistoryIndex) {
-        const state = { index };
-        const url = `/editor?diagram=${index}`;
-        window.history.pushState(state, '', url);
-      }
+      // if (index !== currentHistoryIndex) {
+      //   const state = { index };
+      //   const url = `/editor?diagram=${index}`;
+      //   window.history.pushState(state, '', url);
+      // }
     }
   };
 */
