@@ -64,11 +64,28 @@ export const DiagramCanvas: React.FC = () => {
   // currentHistoryIndex: índice actual dentro del historial
   // historyLimit: máximo de entradas guardadas en el historial
 
-  /*
-    const [history, setHistory] = React.useState<{ nodes: Node[]; edges: Edge[]; url?: string }[]>([]);
+  const [history, setHistory] = React.useState<{ nodes: Node[]; edges: Edge[]; url?: string }[]>([]);
   const [currentHistoryIndex, setCurrentHistoryIndex] = React.useState<number>(0); // Índice actual del historial
   const historyLimit = 3; // Número máximo de entradas en el historial
-  */
+
+  // Agrega una nueva gráfica al historial y sincroniza el historial del navegador
+  const addToHistory = (newEntry: { nodes: Node[]; edges: Edge[]; url?: string }) => {
+    setHistory((prevHistory) => {
+      const updatedHistory = [...prevHistory, newEntry];
+      if (updatedHistory.length > historyLimit) {
+        updatedHistory.shift();
+      }
+
+      // Sincroniza el historial del navegador (pushState)
+      // const state = { index: updatedHistory.length - 1 };
+      // const url = `/editor?diagram=${state.index}`;
+      // window.history.pushState(state, '', url);
+
+      setCurrentHistoryIndex(updatedHistory.length - 1); // Actualiza el índice actual
+
+      return updatedHistory;
+    });
+  };
 
   const {
     nodes,
@@ -170,11 +187,11 @@ export const DiagramCanvas: React.FC = () => {
       }
 
       // Solo actualiza el historial del navegador si no estás navegando dentro del historial existente
-      if (index !== currentHistoryIndex) {
-        const state = { index };
-        const url = `/editor?diagram=${index}`;
-        window.history.pushState(state, '', url);
-      }
+      // if (index !== currentHistoryIndex) {
+      //   const state = { index };
+      //   const url = `/editor?diagram=${index}`;
+      //   window.history.pushState(state, '', url);
+      // }
     }
   };
 */
@@ -202,44 +219,56 @@ export const DiagramCanvas: React.FC = () => {
   useEffect(() => {
     const loadDiagram = async () => {
       try {
-// Intentar cargar el diagrama desde el backend si se especifica una URL
-        const start_url = process.env.REACT_APP_START_URL;
+        // Intentar cargar desde sessionStorage primero
+        const storedUrl = sessionStorage.getItem('REACT_APP_START_URL');
+        const storedDiagram = sessionStorage.getItem('REACT_APP_DIAGRAM_DATA');
 
-        if (start_url) {
-          const response = await fetch(start_url);
-          if (!response.ok) {
-            throw new Error(`Error al cargar desde el backend: ${response.statusText}`);
-          }
-          const json = await response.json();
+        if (storedDiagram) {
+          // Cargar diagrama desde sessionStorage
+          const json = JSON.parse(storedDiagram);
           if (json.nodes && json.edges) {
             setNodes(json.nodes);
             setEdges(json.edges);
-            // addToHistory({ nodes: json.nodes, edges: json.edges, url: start_url }); // Agregar al historial
-            console.log('Diagrama cargado desde el backend.');
-            return; // Salir si se cargó correctamente
-          } else {
-            throw new Error('El JSON recibido del backend no tiene el formato esperado.');
+            addToHistory({ nodes: json.nodes, edges: json.edges });
+            console.log('Diagrama cargado desde sessionStorage.');
+            return;
           }
         }
 
-// Si no se especifica una URL, cargar el diagrama predeterminado
-        console.log('No se especificó una URL. Cargando el diagrama predeterminado.');
-        const fallbackResponse = await fetch('/Diagramas/MapaDeSitioLineasPR.json');
-        if (!fallbackResponse.ok) {
-          throw new Error(`Error al cargar el diagrama predeterminado: ${fallbackResponse.statusText}`);
+        if (storedUrl) {
+          // Intentar cargar desde backend
+          try {
+            const response = await fetch(storedUrl);
+            if (response.ok) {
+              const json = await response.json();
+              if (json.nodes && json.edges) {
+                setNodes(json.nodes);
+                setEdges(json.edges);
+                addToHistory({ nodes: json.nodes, edges: json.edges, url: storedUrl });
+                console.log('Diagrama cargado desde el backend.');
+                return;
+              }
+            }
+          } catch (backendError) {
+            console.warn('Backend no disponible, cargando diagrama por defecto:', backendError);
+          }
         }
-        const fallbackJson = await fallbackResponse.json();
-        if (fallbackJson.nodes && fallbackJson.edges) {
-          setNodes(fallbackJson.nodes);
-          setEdges(fallbackJson.edges);
-          //addToHistory({ nodes: fallbackJson.nodes, edges: fallbackJson.edges, url: '/Diagramas/MapaDeSitioLineasPR.json' }); // Agregar al historial
-          console.log('Diagrama predeterminado cargado correctamente.');
-        } else {
-          throw new Error('El JSON predeterminado no tiene el formato esperado.');
+
+        // Cargar diagrama predeterminado
+        console.log('Cargando diagrama predeterminado.');
+        const fallbackResponse = await fetch('/Diagramas/MapaDeSitioLineasPR.json');
+        if (fallbackResponse.ok) {
+          const fallbackJson = await fallbackResponse.json();
+          if (fallbackJson.nodes && fallbackJson.edges) {
+            setNodes(fallbackJson.nodes);
+            setEdges(fallbackJson.edges);
+            //addToHistory({ nodes: fallbackJson.nodes, edges: fallbackJson.edges });
+            console.log('Diagrama predeterminado cargado.');
+          }
         }
       } catch (error) {
         console.error('Error al cargar el diagrama:', error);
-        alert('No se pudo cargar ningún diagrama.');
+        // No mostrar alert, solo log
       }
     };
 

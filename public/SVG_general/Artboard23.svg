@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 347.47 215.65">
+  <defs>
+    <style>
+      .cls-1, .cls-2 {
+        fill: none;
+      }
+
+      .cls-2 {
+        filter: url(#drop-shadow-48);
+        stroke: #fff;
+        stroke-miterlimit: 10;
+        stroke-width: 2px;
+      }
+
+      .cls-3 {
+        fill: #fff;
+      }
+
+      .cls-4 {
+        filter: url(#drop-shadow-47);
+        opacity: .15;
+      }
+
+      .cls-5 {
+        clip-path: url(#clippath);
+      }
+    </style>
+    <clipPath id="clippath">
+      <rect class="cls-1" x="-1176.93" y="-610.74" width="1095" height="616.06"/>
+    </clipPath>
+    <filter id="drop-shadow-47" x="106.83" y="-59.26" width="167" height="64" filterUnits="userSpaceOnUse">
+      <feOffset dx="-5" dy="5"/>
+      <feGaussianBlur result="blur" stdDeviation="5"/>
+      <feFlood flood-color="#000" flood-opacity=".45"/>
+      <feComposite in2="blur" operator="in"/>
+      <feComposite in="SourceGraphic"/>
+    </filter>
+    <filter id="drop-shadow-48" x="105.83" y="-60.26" width="169" height="66" filterUnits="userSpaceOnUse">
+      <feOffset dx="-5" dy="5"/>
+      <feGaussianBlur result="blur-2" stdDeviation="5"/>
+      <feFlood flood-color="#000" flood-opacity=".45"/>
+      <feComposite in2="blur-2" operator="in"/>
+      <feComposite in="SourceGraphic"/>
+    </filter>
+  </defs>
+  <g class="cls-5">
+    <image width="4000" height="2670" transform="translate(-1207.85 -812.79) scale(.31)" xlink:href="../../images/dmitry-grigoriev-yxXpjF-RrnA-unsplash.jpg"/>
+  </g>
+  <g>
+    <path class="cls-3" d="M46.39,7.62h17.43v167.8h-17.43v-35.31h-16.18v35.31H12.79V7.62h33.61ZM46.39,122.56V25.16h-16.18v97.4h16.18Z"/>
+    <path class="cls-3" d="M93.1,25.51v31.56h29.96v86.58h-45.57V25.51h15.61ZM77.49,175.54v-15.49h45.57v15.49h-45.57ZM107.45,72.67h-14.35v55.36h14.35v-55.36Z"/>
+    <path class="cls-3" d="M182.3,25.96v15.61h-45.57v-15.61h45.57ZM136.73,57.52h45.57v86.58h-29.96v15.83h29.96v15.61h-45.57V57.52ZM152.34,73.12v55.36h14.35v-55.36h-14.35Z"/>
+    <path class="cls-3" d="M198.59,188.18V57.4h15.61v146.38h-45.57v-15.61h29.96ZM198.59,47.95v-21.99h15.61v21.99h-15.61Z"/>
+    <path class="cls-3" d="M273.43,25.51v15.61h-45.57v-15.61h45.57ZM273.43,57.06v118.47h-45.57v-84.87h29.96v-18h-29.96v-15.61h45.57ZM257.83,159.93v-53.66h-14.35v53.66h14.35Z"/>
+    <path class="cls-3" d="M332.67,97.05v47.28h-45.57v-15.72h29.96v-15.95h-29.96V26.19h45.57v15.61h-29.96v55.25h29.96ZM287.1,175.76v-15.61h45.57v15.61h-45.57Z"/>
+  </g>
+  <g>
+    <rect class="cls-4" x="127.28" y="-48.93" width="136.47" height="33.44" rx="8.97" ry="8.97"/>
+    <rect class="cls-2" x="127.28" y="-48.93" width="136.47" height="33.44" rx="8.97" ry="8.97"/>
+  </g>
+</svg>

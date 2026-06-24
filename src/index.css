@@ -1,13 +1,39 @@
 body {
   margin: 0;
+  padding: 0; /* Asegurar sin padding */
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
     'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  background-color: #ffffff !important;
+  overflow-x: hidden; /* Prevenir scroll horizontal */
+  width: 100%;
 }
 
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
+}
+
+/* Eliminar sombras y efectos de todas las imágenes */
+img {
+  box-shadow: none !important;
+  filter: none !important;
+  border: none !important;
+  outline: none !important;
+  background: transparent !important;
+}
+
+/* Forzar fondo blanco en el root de la app */
+#root {
+  background-color: #ffffff !important;
+  overflow-x: hidden; /* Prevenir scroll horizontal */
+  width: 100%;
+}
+
+/* Prevenir scroll horizontal global */
+html {
+  overflow-x: hidden;
+  width: 100%;
 }

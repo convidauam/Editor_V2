@@ -4,14 +4,14 @@ export const darkTheme = createTheme({
   palette: {
     mode: 'dark',
     primary: {
-      main: '#1976d2',
-      light: '#42a5f5',
-      dark: '#1565c0',
+      main: '#7c4dff',
+      light: '#b47cff',
+      dark: '#3f1dcb',
     },
     secondary: {
-      main: '#dc004e',
-      light: '#ff5983',
-      dark: '#9a0036',
+      main: '#ff4081',
+      light: '#ff79b0',
+      dark: '#c60055',
     },
     background: {
       default: '#121212',
@@ -24,6 +24,21 @@ export const darkTheme = createTheme({
   },
   typography: {
     fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif',
+    h1: {
+      fontWeight: 700,
+    },
+    h2: {
+      fontWeight: 700,
+    },
+    h3: {
+      fontWeight: 700,
+    },
+    h4: {
+      fontWeight: 600,
+    },
+    h5: {
+      fontWeight: 600,
+    },
     h6: {
       fontWeight: 600,
     },
@@ -34,7 +49,15 @@ export const darkTheme = createTheme({
         root: {
           textTransform: 'none',
           borderRadius: 8,
+          fontWeight: 500,
+          boxShadow: 'none', // Sin sombra por defecto
+          '&:hover': {
+            boxShadow: 'none', // Sin sombra en hover
+          },
         },
+      },
+      defaultProps: {
+        disableElevation: true,
       },
     },
     MuiPaper: {
@@ -44,5 +67,22 @@ export const darkTheme = createTheme({
         },
       },
     },
+    MuiCard: {
+      styleOverrides: {
+        root: {
+          borderRadius: 12,
+        },
+      },
+    },
+    MuiChip: {
+      styleOverrides: {
+        root: {
+          borderRadius: 8,
+        },
+      },
+    },
   },
-}); 
+  shape: {
+    borderRadius: 8,
+  },
+});
