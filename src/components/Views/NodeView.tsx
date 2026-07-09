@@ -12,6 +12,7 @@ import { useTranslation } from 'react-i18next';
 import i18n from '../../i18n/config';
 import { decodeText } from '../../utils/textDecoder';
 import { translateNode } from '../../services/translationService';
+import EditIcon from "@mui/icons-material/Edit";
 
 export const NodeView: React.FC = () => {
   const { nodeId } = useParams<{ nodeId: string }>();
@@ -472,6 +473,26 @@ export const NodeView: React.FC = () => {
           </Paper>
         )}
 
+          <Button
+            variant="contained"
+            startIcon={<EditIcon />}
+            onClick={() => {
+              const apiUrl = `http://localhost:6543/api/v1/node/${nodeId}`;
+              sessionStorage.setItem('REACT_APP_START_URL', apiUrl);
+              navigate('/editor');
+            }}
+            sx={{
+              flex: { xs: '1 1 100%', sm: '1 1 auto' },
+              background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+              '&:hover': {
+                background: 'linear-gradient(135deg, #5568d3 0%, #6a3f8f 100%)',
+              }
+            }}
+          >
+            Abrir en Editor
+          </Button>
+
+
         {/* Nodos relacionados - MEJORADO */}
         {node.nodes && node.nodes.length > 0 && (
           <Box sx={{ mb: 4 }}>
@@ -522,7 +543,11 @@ export const NodeView: React.FC = () => {
                       borderColor: '#667eea'
                     }
                   }}
-                  onClick={() => handleOpenChildModal(childNode)}
+                onClick={() => {
+                  console.log('Navegando a nodo:', node.id);
+                  navigate(`/node/${childNode.id}`);
+                }}
+                  // onClick={() => handleOpenChildModal(childNode)}
                 >
                   <CardActionArea>
                     <CardContent sx={{ p: 3 }}>
