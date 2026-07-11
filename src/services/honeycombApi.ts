@@ -15,9 +15,10 @@ export interface NodeData {
   type?: string; // Tipo de celda
   contents?: string; //  Para CellText
   source?: string; //  Para CellRichText (HTML)
-  href?: string; //  Para CellWebContent y CellAnimation
+  href?: string; //  Para CellWebContent
   icon?: string; //  Para CellIcon
   iconUrl?: string; //  Para CellIcon
+  src?: string; //  Para CellImage, CellAudio y video
   url?: string; //  URL del recurso Pyramid
   nodes: any[];
   edges: any[];

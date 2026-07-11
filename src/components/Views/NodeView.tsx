@@ -32,6 +32,8 @@ export const NodeView: React.FC = () => {
 
   useEffect(() => {
     if (nodeId) loadNode(nodeId);
+        const apiUrl = `http://localhost:6543/api/v1/node/${nodeId}`;
+        sessionStorage.setItem('REACT_APP_START_URL', apiUrl);
   }, [nodeId]);
 
   const loadNode = async (id: string) => {
@@ -48,6 +50,7 @@ export const NodeView: React.FC = () => {
         contents: data.contents ? decodeText(data.contents) : data.contents,
         url: data.url,
         href: data.href,
+        src: data.src,
         iconUrl: data.iconUrl || data.icon,
         nodes: data.nodes?.map((childNode: any) => ({
           ...childNode,
@@ -314,15 +317,15 @@ export const NodeView: React.FC = () => {
               </Typography>
               
               {/* Mostrar URLs disponibles */}
-              {node.url && (
+              {node.href && (
                 <Box sx={{ mb: 2, p: 2, backgroundColor: '#f5f5f5', borderRadius: 1 }}>
                   <Link 
-                    href={node.url} 
+                    href={node.href}
                     target="_blank" 
                     rel="noopener noreferrer"
                     sx={{ color: '#667eea', fontWeight: 600, textDecoration: 'none', wordBreak: 'break-all', fontFamily: 'monospace', fontSize: '0.85rem' }}
                   >
-                    URL página: {node.url}
+                    URL página: {node.href}
                   </Link>
                 </Box>
               )}
@@ -330,7 +333,8 @@ export const NodeView: React.FC = () => {
               {/* Renderizar el contenido según el tipo */}
               <Box sx={{ width: '100%', backgroundColor: '#f5f5f5', borderRadius: 2, overflow: 'hidden' }}>
                 {(() => {
-                  const resourceUrl = node.href || extractedMediaUrl || node.url;
+                  // const resourceUrl = node.href || extractedMediaUrl || node.url;
+                    const resourceUrl = "/editor" + "?nocache=" + new Date().getTime();
                   
                   if (!resourceUrl) {
                     return (
@@ -342,11 +346,11 @@ export const NodeView: React.FC = () => {
                     );
                   }
                   
-                  if (node.type === 'CellAnimation' && node.href) {
+                  if (node.type === 'animation' && node.src) {
                     return (
                       <Box sx={{ p: 2, textAlign: 'center', backgroundColor: '#fff' }}>
                         <img 
-                          src={node.href} 
+                          src={node.src}
                           alt={node.title || node.label}
                           style={{ 
                             maxWidth: '100%',
@@ -366,7 +370,7 @@ export const NodeView: React.FC = () => {
                     );
                   }
                   
-                  if (node.type === 'CellWebContent' && node.href) {
+                  if (node.type === 'webcontent' && node.href) {
                     return (
                       <Box>
                         <Typography variant="body2" sx={{ p: 2, color: '#666', textAlign: 'center', backgroundColor: '#fff' }}>
