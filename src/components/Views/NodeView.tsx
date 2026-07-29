@@ -483,7 +483,9 @@ export const NodeView: React.FC = () => {
             onClick={() => {
               const apiUrl = `http://localhost:6543/api/v1/node/${nodeId}`;
               sessionStorage.setItem('REACT_APP_START_URL', apiUrl);
-              navigate('/editor');
+              if (window.location.pathname !== '/editor') {
+                navigate('/editor');
+              }
             }}
             sx={{
               flex: { xs: '1 1 100%', sm: '1 1 auto' },

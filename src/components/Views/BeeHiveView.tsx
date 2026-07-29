@@ -108,7 +108,9 @@ export const BeeHiveView: React.FC = () => {
       sessionStorage.setItem('REACT_APP_DIAGRAM_DATA', JSON.stringify(diagram));
       sessionStorage.removeItem('REACT_APP_START_URL'); // Limpiar URL de API
       
-      navigate('/editor');
+      if (window.location.pathname !== '/editor') {
+        navigate('/editor');
+      }
     } catch (error) {
       console.error('Error creating diagram:', error);
     }
