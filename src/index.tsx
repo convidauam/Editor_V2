@@ -5,6 +5,13 @@ import reportWebVitals from './reportWebVitals';
 import { ThemeProvider } from '@mui/material/styles';
 import { darkTheme } from './theme';
 
+
+// Normalización de rutas.
+const normalizedPath = window.location.pathname.replace(/\/{2,}/g, '/');
+if (normalizedPath !== window.location.pathname) {
+  window.history.replaceState(null, '', normalizedPath || '/');
+}
+
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
 );
